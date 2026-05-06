@@ -391,6 +391,16 @@
     white-space: nowrap;
     font-weight: 600;
   }
+  .badge-parcial {
+    font-size: 9px;
+    color: #86efac;
+    background: rgba(134,239,172,0.12);
+    border: 1px solid rgba(134,239,172,0.30);
+    border-radius: 4px;
+    padding: 1px 5px;
+    white-space: nowrap;
+    font-weight: 600;
+  }
 
   /* MAPA DO BRASIL */
   .mapa-container {
@@ -752,7 +762,7 @@ const REDES = [
   { key:'mm', nome:'MM Lojas', total:230, cor:'#cc0000', ativa:true, estados:['MS','PR','SC'] },
   { key:'colombo', nome:'Colombo', total:359, cor:'#1a3a8f', ativa:true, estados:['RS','SC','PR'] },
   { key:'simonetti', nome:'Simonetti', total:72, cor:'#cc0000', ativa:false, estados:['ES','BA'] },
-  { key:'fujioka', nome:'Fujioka', total:55, cor:'#cc0000', ativa:false, estados:['GO','DF','MT','TO'] },
+  { key:'fujioka', nome:'Fujioka', total:55, cor:'#cc0000', ativa:true, parcial:true, estados:['GO','DF','MT','TO'] },
   { key:'solar', nome:'Solar Magazine', total:57, cor:'#e55a00', ativa:false, estados:['CE'] },
   { key:'linhares', nome:'Móveis Linhares', total:22, cor:'#cc0044', ativa:false, estados:['ES'] },
   { key:'multiloja', nome:'TV Multiloja', total:78, cor:'#0066cc', ativa:false, estados:['PR'] },
@@ -822,7 +832,7 @@ function buildRedesGrid() {
           <div style="width:6px;height:6px;border-radius:50%;background:${isAtiva ? '#4ade80' : '#fbbf24'};flex-shrink:0;"></div>
           <span style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:${hasSel ? r.cor : 'rgba(255,255,255,0.9)'};white-space:nowrap;">${r.nome}</span>
           <span style="font-size:11px;color:rgba(255,255,255,0.55);white-space:nowrap;">${r.total} lojas</span>
-          ${!isAtiva ? '<span class="badge-implantacao">Em implantação</span>' : ''}
+          ${r.parcial ? '<span class="badge-parcial">Liberação Parcial</span>' : (!isAtiva ? '<span class="badge-implantacao">Em implantação</span>' : '')}
         </div>
         <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;">${estadosStr}</div>
       </div>
