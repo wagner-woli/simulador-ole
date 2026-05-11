@@ -483,38 +483,6 @@
 </head>
 <body>
 
-<!-- TELA DE LOGIN -->
-<div id="login-overlay" style="position:fixed;inset:0;z-index:9999;background:#082060;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;">
-  <div style="text-align:center;margin-bottom:8px;">
-    <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:28px;color:#fff;letter-spacing:1px;">Woli Mídia</div>
-    <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px;">Simulador de Mídia</div>
-  </div>
-  <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:32px 40px;display:flex;flex-direction:column;gap:16px;min-width:300px;">
-    <label style="font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);letter-spacing:1px;">SENHA DE ACESSO</label>
-    <input id="login-input" type="password" placeholder="Digite a senha"
-      style="background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.25);border-radius:8px;color:#fff;font-family:'Montserrat',sans-serif;font-size:15px;padding:10px 14px;outline:none;width:100%;"
-      onkeydown="if(event.key==='Enter') tentarLogin()" />
-    <div id="login-erro" style="color:#f87171;font-size:12px;display:none;text-align:center;">Senha incorreta. Tente novamente.</div>
-    <button onclick="tentarLogin()"
-      style="background:#e41e26;border:none;border-radius:8px;color:#fff;font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;padding:11px;cursor:pointer;letter-spacing:0.5px;">
-      ENTRAR
-    </button>
-  </div>
-</div>
-
-<script>
-function tentarLogin() {
-  const val = document.getElementById('login-input').value;
-  if (val === 'woli-Fujioka') {
-    document.getElementById('login-overlay').style.display = 'none';
-  } else {
-    const erro = document.getElementById('login-erro');
-    erro.style.display = 'block';
-    document.getElementById('login-input').value = '';
-    document.getElementById('login-input').focus();
-  }
-}
-</script>
 
 <div class="page">
 
