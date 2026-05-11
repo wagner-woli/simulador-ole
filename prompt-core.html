@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d1b2e">
+<title>Prompt C.O.R.E.</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #0d1b2e;
+    --surface: #132035;
+    --card:    #1a2d47;
+    --border:  #243d5c;
+    --accent:  #e8c87a;
+    --blue:    #4a9eff;
+    --red:     #ff6464;
+    --green:   #3ecf8e;
+    --text:    #e8edf4;
+    --muted:   #7a92ad;
+    --r:       12px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    /* mobile-first padding */
+    padding: 24px 16px 80px;
+  }
+
+  .container { max-width: 640px; margin: 0 auto; }
+
+  /* ── Header ── */
+  header { text-align: center; margin-bottom: 32px; }
+
+  header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  header h1 em { font-style: italic; color: var(--accent); }
+
+  header p {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── Steps ── */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .step:focus-within { border-color: var(--blue); }
+
+  .letter {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 800;
+    font-style: italic;
+    flex-shrink: 0;
+  }
+
+  .C { background: rgba(74,158,255,.15);  color: var(--blue);   }
+  .O { background: rgba(232,200,122,.15); color: var(--accent); }
+  .R { background: rgba(255,100,100,.15); color: var(--red);    }
+  .E { background: rgba(62,207,142,.15);  color: var(--green);  }
+
+  .step-body {}
+
+  .step-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+
+  .step-desc {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 10px 12px;
+    resize: none;
+    outline: none;
+    transition: border-color .15s;
+    /* auto-height via JS */
+    overflow: hidden;
+    min-height: 72px;
+  }
+
+  textarea::placeholder { color: var(--muted); font-size: 13px; }
+  textarea:focus { border-color: var(--blue); background: #16273f; }
+
+  .hint {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  .hint b { color: rgba(232,200,122,.7); font-style: normal; }
+
+  /* ── CTA ── */
+  .btn-gerar {
+    width: 100%;
+    background: linear-gradient(135deg, #e8c87a, #d4a842);
+    color: #0d1b2e;
+    border: none;
+    border-radius: var(--r);
+    padding: 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: opacity .15s, transform .1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-gerar:active { opacity: .85; transform: scale(.98); }
+
+  /* ── Resultado ── */
+  .result {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    overflow: hidden;
+    display: none;
+  }
+
+  .result.show { display: block; }
+
+  .result-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-bar span {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .bar-actions { display: flex; gap: 8px; }
+
+  .btn-copy, .btn-clear {
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-copy {
+    background: transparent;
+    color: var(--blue);
+    border-color: rgba(74,158,255,.35);
+    transition: background .15s;
+  }
+  .btn-copy:active { background: rgba(74,158,255,.12); }
+  .btn-copy.ok { color: var(--green); border-color: rgba(62,207,142,.35); }
+
+  .btn-clear {
+    background: transparent;
+    color: var(--muted);
+    transition: color .15s;
+  }
+  .btn-clear:active { color: var(--text); }
+
+  #output {
+    padding: 18px 16px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .out-block { margin-bottom: 14px; }
+  .out-block:last-child { margin-bottom: 0; }
+
+  .out-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .out-label.C { color: var(--blue); }
+  .out-label.O { color: var(--accent); }
+  .out-label.R { color: var(--red); }
+  .out-label.E { color: var(--green); }
+
+  .out-text { color: var(--text); }
+
+  /* ── Desktop ── */
+  @media (min-width: 640px) {
+    body { padding: 40px 24px 80px; }
+    header h1 { font-size: 34px; }
+    .step { padding: 20px; gap: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Anatomia do Prompt <em>C.O.R.E.</em></h1>
+    <p>4 ingredientes. Preencha e gere seu prompt pronto para copiar.</p>
+  </header>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="letter C">C</div>
+      <div class="step-body">
+        <div class="step-title">Contexto</div>
+        <div class="step-desc">Quem é você, qual o negócio, qual a situação</div>
+        <textarea id="C" placeholder="Ex: Sou dona de clínica de estética, 8 funcionárias, R$80k/mês de faturamento." oninput="auto(this)"></textarea>
+        <p class="hint"><b>Dica:</b> Quanto mais específico, melhor o resultado.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="letter O">O</div>
+      <div class="step-body">
+        <div class="step-title">Objetivo</div>
+        <div class="step-desc">O que deve sair do outro lado — seja específico</div>
+        <textarea id="O" placeholder="Ex: Quero 3 roteiros de stories para captar leads de procedimento facial." oninput="auto(this)"></textarea>
+        <p class="hint"><b>Dica:</b> Inclua quantidade, formato e finalidade.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="letter R">R</div>
+      <div class="step-body">
+        <div class="step-title">Restrições</div>
+        <div class="step-desc">O que NÃO pode: formato, tom, palavras vetadas</div>
+        <textarea id="R" placeholder="Ex: Tom acolhedor. Sem promessa de resultado. Máx 60s. Sem 'transforme sua vida'." oninput="auto(this)"></textarea>
+        <p class="hint"><b>Dica:</b> Restrições eliminam retrabalho.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="letter E">E</div>
+      <div class="step-body">
+        <div class="step-title">Exemplo</div>
+        <div class="step-desc">Uma referência do que é bom (ou ruim)</div>
+        <textarea id="E" placeholder="Ex: Bom: copy estilo do @marcaX. Ruim: textos com clichê de coach." oninput="auto(this)"></textarea>
+        <p class="hint"><b>Dica:</b> Um exemplo vale mais que mil adjetivos.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="btn-gerar" onclick="gerar()">Gerar Prompt →</button>
+
+  <div class="result" id="result">
+    <div class="result-bar">
+      <span>Prompt gerado</span>
+      <div class="bar-actions">
+        <button class="btn-copy" id="btn-copy" onclick="copiar()">Copiar</button>
+        <button class="btn-clear" onclick="limpar()">Limpar</button>
+      </div>
+    </div>
+    <div id="output"></div>
+  </div>
+
+</div>
+
+<script>
+  // auto-resize textarea
+  function auto(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+
+  const LABELS = { C: 'CONTEXTO', O: 'OBJETIVO', R: 'RESTRIÇÕES', E: 'EXEMPLO' };
+
+  function gerar() {
+    const vals = { C: v('C'), O: v('O'), R: v('R'), E: v('E') };
+    if (!Object.values(vals).some(Boolean)) return shake();
+
+    const out = document.getElementById('output');
+    out.innerHTML = '';
+
+    Object.entries(vals).forEach(([k, txt]) => {
+      if (!txt) return;
+      const block = document.createElement('div');
+      block.className = 'out-block';
+      block.innerHTML = `<div class="out-label ${k}">[${k}] ${LABELS[k]}</div><div class="out-text"></div>`;
+      block.querySelector('.out-text').textContent = txt;
+      out.appendChild(block);
+    });
+
+    const res = document.getElementById('result');
+    res.classList.add('show');
+    res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    const btn = document.getElementById('btn-copy');
+    btn.textContent = 'Copiar';
+    btn.classList.remove('ok');
+  }
+
+  function copiar() {
+    const partes = ['C','O','R','E']
+      .map(k => { const t = v(k); return t ? `[${LABELS[k]}]\n${t}` : null; })
+      .filter(Boolean)
+      .join('\n\n');
+
+    navigator.clipboard.writeText(partes).catch(() => {
+      const ta = Object.assign(document.createElement('textarea'), { value: partes });
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    });
+
+    const btn = document.getElementById('btn-copy');
+    btn.textContent = '✓ Copiado!';
+    btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('ok'); }, 2500);
+  }
+
+  function limpar() {
+    ['C','O','R','E'].forEach(k => {
+      const el = document.getElementById(k);
+      el.value = '';
+      el.style.height = '';
+    });
+    document.getElementById('result').classList.remove('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function shake() {
+    document.querySelector('.btn-gerar').style.animation = 'none';
+    // visual feedback: briefly highlight first empty textarea
+    const first = ['C','O','R','E'].map(k => document.getElementById(k)).find(el => !el.value.trim());
+    if (first) { first.focus(); first.style.borderColor = '#ff6464'; setTimeout(() => first.style.borderColor = '', 800); }
+  }
+
+  function v(id) { return document.getElementById(id).value.trim(); }
+</script>
+</body>
+</html>
