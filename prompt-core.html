@@ -3,22 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gerador de Prompt C.O.R.E.</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0d1b2e">
+<title>Prompt C.O.R.E.</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:       #0d1b2e;
-    --surface:  #132035;
-    --card:     #1a2d47;
-    --border:   #243d5c;
-    --accent:   #e8c87a;
-    --accent2:  #4a9eff;
-    --text:     #e8edf4;
-    --muted:    #7a92ad;
-    --success:  #3ecf8e;
-    --radius:   14px;
+    --bg:      #0d1b2e;
+    --surface: #132035;
+    --card:    #1a2d47;
+    --border:  #243d5c;
+    --accent:  #e8c87a;
+    --blue:    #4a9eff;
+    --red:     #ff6464;
+    --green:   #3ecf8e;
+    --text:    #e8edf4;
+    --muted:   #7a92ad;
+    --r:       12px;
   }
 
   body {
@@ -26,462 +28,363 @@
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    padding: 32px 16px 64px;
+    /* mobile-first padding */
+    padding: 24px 16px 80px;
   }
 
-  .container { max-width: 860px; margin: 0 auto; }
+  .container { max-width: 640px; margin: 0 auto; }
 
   /* ── Header ── */
-  header { text-align: center; margin-bottom: 48px; }
-
-  .badge {
-    display: inline-block;
-    background: rgba(232,200,122,.12);
-    border: 1px solid rgba(232,200,122,.3);
-    color: var(--accent);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 5px 14px;
-    border-radius: 20px;
-    margin-bottom: 16px;
-  }
+  header { text-align: center; margin-bottom: 32px; }
 
   header h1 {
-    font-size: clamp(28px, 5vw, 42px);
+    font-size: 26px;
     font-weight: 800;
-    letter-spacing: -1px;
-    line-height: 1.15;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
   }
 
-  header h1 em {
-    font-style: italic;
-    color: var(--accent);
-  }
+  header h1 em { font-style: italic; color: var(--accent); }
 
   header p {
-    margin-top: 12px;
+    margin-top: 8px;
+    font-size: 13px;
     color: var(--muted);
-    font-size: 15px;
-    max-width: 520px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
+    line-height: 1.5;
   }
 
-  /* ── Grid de cards ── */
-  .core-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
-  }
-
-  @media (max-width: 600px) {
-    .core-grid { grid-template-columns: 1fr; }
-  }
-
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
+  /* ── Steps ── */
+  .steps {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    transition: border-color .2s;
+    margin-bottom: 20px;
   }
 
-  .card:focus-within {
-    border-color: var(--accent2);
-    box-shadow: 0 0 0 3px rgba(74,158,255,.12);
-  }
-
-  .card-header {
-    display: flex;
-    align-items: center;
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 44px 1fr;
     gap: 14px;
+    align-items: start;
   }
+
+  .step:focus-within { border-color: var(--blue); }
 
   .letter {
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 800;
     font-style: italic;
     flex-shrink: 0;
   }
 
-  .letter-C { background: rgba(74,158,255,.15); color: #4a9eff; }
-  .letter-O { background: rgba(232,200,122,.15); color: var(--accent); }
-  .letter-R { background: rgba(255,100,100,.15);  color: #ff6464; }
-  .letter-E { background: rgba(62,207,142,.15);   color: var(--success); }
+  .C { background: rgba(74,158,255,.15);  color: var(--blue);   }
+  .O { background: rgba(232,200,122,.15); color: var(--accent); }
+  .R { background: rgba(255,100,100,.15); color: var(--red);    }
+  .E { background: rgba(62,207,142,.15);  color: var(--green);  }
 
-  .card-meta strong {
-    display: block;
+  .step-body {}
+
+  .step-title {
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 1.5px;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
     color: var(--muted);
     margin-bottom: 2px;
   }
 
-  .card-meta span {
-    font-size: 14px;
+  .step-desc {
+    font-size: 13px;
     font-weight: 600;
     color: var(--text);
+    margin-bottom: 10px;
   }
 
   textarea {
     width: 100%;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
     color: var(--text);
     font-family: 'Inter', sans-serif;
     font-size: 14px;
-    line-height: 1.55;
-    padding: 12px 14px;
-    resize: vertical;
-    min-height: 100px;
+    line-height: 1.5;
+    padding: 10px 12px;
+    resize: none;
     outline: none;
-    transition: border-color .2s;
+    transition: border-color .15s;
+    /* auto-height via JS */
+    overflow: hidden;
+    min-height: 72px;
   }
 
-  textarea::placeholder { color: var(--muted); }
-
-  textarea:focus {
-    border-color: var(--accent2);
-    background: #162540;
-  }
+  textarea::placeholder { color: var(--muted); font-size: 13px; }
+  textarea:focus { border-color: var(--blue); background: #16273f; }
 
   .hint {
-    font-size: 12px;
+    margin-top: 6px;
+    font-size: 11px;
     color: var(--muted);
     font-style: italic;
-    line-height: 1.5;
+    line-height: 1.4;
   }
 
-  .hint strong { color: rgba(232,200,122,.75); font-style: normal; }
+  .hint b { color: rgba(232,200,122,.7); font-style: normal; }
 
-  /* ── Botão gerar ── */
-  .btn-wrap { text-align: center; margin: 8px 0 28px; }
-
-  button.btn-gerar {
-    background: linear-gradient(135deg, #e8c87a 0%, #d4a842 100%);
+  /* ── CTA ── */
+  .btn-gerar {
+    width: 100%;
+    background: linear-gradient(135deg, #e8c87a, #d4a842);
     color: #0d1b2e;
     border: none;
-    border-radius: 12px;
-    padding: 16px 48px;
+    border-radius: var(--r);
+    padding: 16px;
     font-family: 'Inter', sans-serif;
     font-size: 15px;
     font-weight: 800;
-    letter-spacing: .5px;
     cursor: pointer;
-    transition: transform .15s, box-shadow .15s, opacity .15s;
-    box-shadow: 0 4px 20px rgba(232,200,122,.3);
+    margin-bottom: 20px;
+    transition: opacity .15s, transform .1s;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  button.btn-gerar:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(232,200,122,.4); }
-  button.btn-gerar:active { transform: translateY(0); }
+  .btn-gerar:active { opacity: .85; transform: scale(.98); }
 
   /* ── Resultado ── */
-  .result-box {
+  .result {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--r);
     overflow: hidden;
     display: none;
   }
 
-  .result-box.visible { display: block; animation: fadeUp .3s ease; }
+  .result.show { display: block; }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .result-header {
+  .result-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: 12px 16px;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
   }
 
-  .result-header span {
-    font-size: 12px;
+  .result-bar span {
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 1.5px;
+    letter-spacing: 1.2px;
     text-transform: uppercase;
     color: var(--muted);
   }
 
-  .result-actions { display: flex; gap: 8px; }
+  .bar-actions { display: flex; gap: 8px; }
 
-  button.btn-copy, button.btn-clear {
-    border: 1px solid var(--border);
+  .btn-copy, .btn-clear {
     border-radius: 8px;
-    padding: 7px 16px;
+    padding: 7px 14px;
     font-family: 'Inter', sans-serif;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: background .15s, color .15s, border-color .15s;
+    border: 1px solid var(--border);
+    -webkit-tap-highlight-color: transparent;
   }
 
-  button.btn-copy {
+  .btn-copy {
     background: transparent;
-    color: var(--accent2);
+    color: var(--blue);
     border-color: rgba(74,158,255,.35);
+    transition: background .15s;
   }
+  .btn-copy:active { background: rgba(74,158,255,.12); }
+  .btn-copy.ok { color: var(--green); border-color: rgba(62,207,142,.35); }
 
-  button.btn-copy:hover { background: rgba(74,158,255,.1); }
-
-  button.btn-copy.copied {
-    background: rgba(62,207,142,.15);
-    color: var(--success);
-    border-color: rgba(62,207,142,.35);
-  }
-
-  button.btn-clear {
+  .btn-clear {
     background: transparent;
     color: var(--muted);
-    border-color: var(--border);
+    transition: color .15s;
   }
+  .btn-clear:active { color: var(--text); }
 
-  button.btn-clear:hover { background: rgba(255,255,255,.05); color: var(--text); }
-
-  #prompt-output {
-    padding: 24px;
+  #output {
+    padding: 18px 16px;
     font-size: 14px;
-    line-height: 1.75;
-    white-space: pre-wrap;
-    color: var(--text);
-    max-height: 480px;
-    overflow-y: auto;
+    line-height: 1.7;
   }
 
-  #prompt-output .label {
+  .out-block { margin-bottom: 14px; }
+  .out-block:last-child { margin-bottom: 0; }
+
+  .out-label {
+    font-size: 10px;
     font-weight: 700;
-    font-size: 11px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    display: block;
-    margin-top: 16px;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
 
-  #prompt-output .label:first-child { margin-top: 0; }
-  #prompt-output .label-C { color: #4a9eff; }
-  #prompt-output .label-O { color: var(--accent); }
-  #prompt-output .label-R { color: #ff6464; }
-  #prompt-output .label-E { color: var(--success); }
+  .out-label.C { color: var(--blue); }
+  .out-label.O { color: var(--accent); }
+  .out-label.R { color: var(--red); }
+  .out-label.E { color: var(--green); }
 
-  #prompt-output p { color: var(--text); }
+  .out-text { color: var(--text); }
 
-  /* ── Divisor ── */
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 40px 0 28px;
+  /* ── Desktop ── */
+  @media (min-width: 640px) {
+    body { padding: 40px 24px 80px; }
+    header h1 { font-size: 34px; }
+    .step { padding: 20px; gap: 16px; }
   }
-
-  /* ── Rodapé ── */
-  footer {
-    text-align: center;
-    margin-top: 56px;
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  footer strong { color: var(--accent); }
 </style>
 </head>
 <body>
 <div class="container">
 
   <header>
-    <div class="badge">Anatomia do Prompt</div>
-    <h1>Construtor <em>C.O.R.E.</em></h1>
-    <p>4 ingredientes. Se faltar um, o resultado emagrece.<br>Preencha cada campo e gere seu prompt ideal.</p>
+    <h1>Anatomia do Prompt <em>C.O.R.E.</em></h1>
+    <p>4 ingredientes. Preencha e gere seu prompt pronto para copiar.</p>
   </header>
 
-  <div class="core-grid">
+  <div class="steps">
 
-    <!-- C -->
-    <div class="card">
-      <div class="card-header">
-        <div class="letter letter-C">C</div>
-        <div class="card-meta">
-          <strong>Contexto</strong>
-          <span>Quem é você, qual o negócio, qual a situação</span>
-        </div>
+    <div class="step">
+      <div class="letter C">C</div>
+      <div class="step-body">
+        <div class="step-title">Contexto</div>
+        <div class="step-desc">Quem é você, qual o negócio, qual a situação</div>
+        <textarea id="C" placeholder="Ex: Sou dona de clínica de estética, 8 funcionárias, R$80k/mês de faturamento." oninput="auto(this)"></textarea>
+        <p class="hint"><b>Dica:</b> Quanto mais específico, melhor o resultado.</p>
       </div>
-      <textarea id="input-C" placeholder="Descreva quem você é e qual o seu negócio..." rows="4"></textarea>
-      <p class="hint"><strong>Ex:</strong> "Sou dona de clínica de estética, 8 funcionárias, R$80k/mês de faturamento."</p>
     </div>
 
-    <!-- O -->
-    <div class="card">
-      <div class="card-header">
-        <div class="letter letter-O">O</div>
-        <div class="card-meta">
-          <strong>Objetivo</strong>
-          <span>O que deve sair do outro lado. Específico.</span>
-        </div>
+    <div class="step">
+      <div class="letter O">O</div>
+      <div class="step-body">
+        <div class="step-title">Objetivo</div>
+        <div class="step-desc">O que deve sair do outro lado — seja específico</div>
+        <textarea id="O" placeholder="Ex: Quero 3 roteiros de stories para captar leads de procedimento facial." oninput="auto(this)"></textarea>
+        <p class="hint"><b>Dica:</b> Inclua quantidade, formato e finalidade.</p>
       </div>
-      <textarea id="input-O" placeholder="Qual o resultado exato que você quer?" rows="4"></textarea>
-      <p class="hint"><strong>Ex:</strong> "Quero 3 roteiros de stories para captar leads de procedimento facial."</p>
     </div>
 
-    <!-- R -->
-    <div class="card">
-      <div class="card-header">
-        <div class="letter letter-R">R</div>
-        <div class="card-meta">
-          <strong>Restrições</strong>
-          <span>O que NÃO pode: formato, tom, tamanho, palavras vetadas</span>
-        </div>
+    <div class="step">
+      <div class="letter R">R</div>
+      <div class="step-body">
+        <div class="step-title">Restrições</div>
+        <div class="step-desc">O que NÃO pode: formato, tom, palavras vetadas</div>
+        <textarea id="R" placeholder="Ex: Tom acolhedor. Sem promessa de resultado. Máx 60s. Sem 'transforme sua vida'." oninput="auto(this)"></textarea>
+        <p class="hint"><b>Dica:</b> Restrições eliminam retrabalho.</p>
       </div>
-      <textarea id="input-R" placeholder="O que você não quer que apareça no resultado?" rows="4"></textarea>
-      <p class="hint"><strong>Ex:</strong> "Tom acolhedor. Sem promessa de resultado. Máximo 60s cada. Sem 'transforme sua vida'."</p>
     </div>
 
-    <!-- E -->
-    <div class="card">
-      <div class="card-header">
-        <div class="letter letter-E">E</div>
-        <div class="card-meta">
-          <strong>Exemplo</strong>
-          <span>Mostre 1 referência do que considera bom (ou ruim)</span>
-        </div>
+    <div class="step">
+      <div class="letter E">E</div>
+      <div class="step-body">
+        <div class="step-title">Exemplo</div>
+        <div class="step-desc">Uma referência do que é bom (ou ruim)</div>
+        <textarea id="E" placeholder="Ex: Bom: copy estilo do @marcaX. Ruim: textos com clichê de coach." oninput="auto(this)"></textarea>
+        <p class="hint"><b>Dica:</b> Um exemplo vale mais que mil adjetivos.</p>
       </div>
-      <textarea id="input-E" placeholder="Uma referência de estilo, tom ou formato..." rows="4"></textarea>
-      <p class="hint"><strong>Ex:</strong> "Bom: copy estilo do @marcaX. Ruim: textos com clichê de coach."</p>
     </div>
 
   </div>
 
-  <div class="btn-wrap">
-    <button class="btn-gerar" onclick="gerarPrompt()">Gerar Prompt C.O.R.E. →</button>
-  </div>
+  <button class="btn-gerar" onclick="gerar()">Gerar Prompt →</button>
 
-  <!-- Resultado -->
-  <div class="result-box" id="result-box">
-    <div class="result-header">
+  <div class="result" id="result">
+    <div class="result-bar">
       <span>Prompt gerado</span>
-      <div class="result-actions">
-        <button class="btn-copy" id="btn-copy" onclick="copiarPrompt()">Copiar</button>
-        <button class="btn-clear" onclick="limpar()">Limpar tudo</button>
+      <div class="bar-actions">
+        <button class="btn-copy" id="btn-copy" onclick="copiar()">Copiar</button>
+        <button class="btn-clear" onclick="limpar()">Limpar</button>
       </div>
     </div>
-    <div id="prompt-output"></div>
+    <div id="output"></div>
   </div>
-
-  <hr class="divider">
-
-  <footer>
-    Ferramenta baseada na metodologia <strong>C.O.R.E.</strong> &mdash; 4 ingredientes para prompts que funcionam.
-  </footer>
 
 </div>
 
 <script>
-  function gerarPrompt() {
-    const C = document.getElementById('input-C').value.trim();
-    const O = document.getElementById('input-O').value.trim();
-    const R = document.getElementById('input-R').value.trim();
-    const E = document.getElementById('input-E').value.trim();
+  // auto-resize textarea
+  function auto(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
 
-    if (!C && !O && !R && !E) {
-      alert('Preencha pelo menos um campo para gerar o prompt.');
-      return;
-    }
+  const LABELS = { C: 'CONTEXTO', O: 'OBJETIVO', R: 'RESTRIÇÕES', E: 'EXEMPLO' };
 
-    const output = document.getElementById('prompt-output');
-    output.innerHTML = '';
+  function gerar() {
+    const vals = { C: v('C'), O: v('O'), R: v('R'), E: v('E') };
+    if (!Object.values(vals).some(Boolean)) return shake();
 
-    const sections = [
-      { key: 'C', label: 'CONTEXTO',    value: C, cls: 'label-C' },
-      { key: 'O', label: 'OBJETIVO',    value: O, cls: 'label-O' },
-      { key: 'R', label: 'RESTRIÇÕES',  value: R, cls: 'label-R' },
-      { key: 'E', label: 'EXEMPLO',     value: E, cls: 'label-E' },
-    ];
+    const out = document.getElementById('output');
+    out.innerHTML = '';
 
-    sections.forEach(s => {
-      if (!s.value) return;
-      const lbl = document.createElement('span');
-      lbl.className = `label ${s.cls}`;
-      lbl.textContent = `[${s.key}] ${s.label}`;
-      const p = document.createElement('p');
-      p.textContent = s.value;
-      output.appendChild(lbl);
-      output.appendChild(p);
+    Object.entries(vals).forEach(([k, txt]) => {
+      if (!txt) return;
+      const block = document.createElement('div');
+      block.className = 'out-block';
+      block.innerHTML = `<div class="out-label ${k}">[${k}] ${LABELS[k]}</div><div class="out-text"></div>`;
+      block.querySelector('.out-text').textContent = txt;
+      out.appendChild(block);
     });
 
-    const box = document.getElementById('result-box');
-    box.classList.add('visible');
-    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const res = document.getElementById('result');
+    res.classList.add('show');
+    res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     const btn = document.getElementById('btn-copy');
     btn.textContent = 'Copiar';
-    btn.classList.remove('copied');
+    btn.classList.remove('ok');
   }
 
-  function copiarPrompt() {
-    const C = document.getElementById('input-C').value.trim();
-    const O = document.getElementById('input-O').value.trim();
-    const R = document.getElementById('input-R').value.trim();
-    const E = document.getElementById('input-E').value.trim();
+  function copiar() {
+    const partes = ['C','O','R','E']
+      .map(k => { const t = v(k); return t ? `[${LABELS[k]}]\n${t}` : null; })
+      .filter(Boolean)
+      .join('\n\n');
 
-    const parts = [];
-    if (C) parts.push(`[CONTEXTO]\n${C}`);
-    if (O) parts.push(`[OBJETIVO]\n${O}`);
-    if (R) parts.push(`[RESTRIÇÕES]\n${R}`);
-    if (E) parts.push(`[EXEMPLO]\n${E}`);
-
-    const texto = parts.join('\n\n');
-
-    navigator.clipboard.writeText(texto).then(() => {
-      const btn = document.getElementById('btn-copy');
-      btn.textContent = '✓ Copiado!';
-      btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = 'Copiar';
-        btn.classList.remove('copied');
-      }, 2500);
-    }).catch(() => {
-      const ta = document.createElement('textarea');
-      ta.value = texto;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      const btn = document.getElementById('btn-copy');
-      btn.textContent = '✓ Copiado!';
-      btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = 'Copiar';
-        btn.classList.remove('copied');
-      }, 2500);
+    navigator.clipboard.writeText(partes).catch(() => {
+      const ta = Object.assign(document.createElement('textarea'), { value: partes });
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
     });
+
+    const btn = document.getElementById('btn-copy');
+    btn.textContent = '✓ Copiado!';
+    btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('ok'); }, 2500);
   }
 
   function limpar() {
-    ['input-C','input-O','input-R','input-E'].forEach(id => {
-      document.getElementById(id).value = '';
+    ['C','O','R','E'].forEach(k => {
+      const el = document.getElementById(k);
+      el.value = '';
+      el.style.height = '';
     });
-    document.getElementById('result-box').classList.remove('visible');
+    document.getElementById('result').classList.remove('show');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  function shake() {
+    document.querySelector('.btn-gerar').style.animation = 'none';
+    // visual feedback: briefly highlight first empty textarea
+    const first = ['C','O','R','E'].map(k => document.getElementById(k)).find(el => !el.value.trim());
+    if (first) { first.focus(); first.style.borderColor = '#ff6464'; setTimeout(() => first.style.borderColor = '', 800); }
+  }
+
+  function v(id) { return document.getElementById(id).value.trim(); }
 </script>
 </body>
 </html>
