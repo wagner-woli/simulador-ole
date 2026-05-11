@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
     --bg:      #0d1b2e;
     --surface: #132035;
@@ -22,230 +21,183 @@
     --muted:   #7a92ad;
     --r:       12px;
   }
-
   body {
     font-family: 'Inter', sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    /* mobile-first padding */
-    padding: 24px 16px 80px;
+    padding: 20px 16px 100px;
   }
-
   .container { max-width: 640px; margin: 0 auto; }
 
-  /* ── Header ── */
-  header { text-align: center; margin-bottom: 32px; }
-
-  header h1 {
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    line-height: 1.2;
-  }
-
+  /* Header */
+  header { text-align: center; margin-bottom: 24px; }
+  header h1 { font-size: 24px; font-weight: 800; letter-spacing: -.5px; }
   header h1 em { font-style: italic; color: var(--accent); }
+  header p { margin-top: 6px; font-size: 13px; color: var(--muted); }
 
-  header p {
-    margin-top: 8px;
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.5;
+  /* Templates */
+  .section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
   }
-
-  /* ── Steps ── */
-  .steps {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
+  .templates-scroll {
+    display: flex; gap: 8px; overflow-x: auto;
+    padding-bottom: 4px; margin-bottom: 20px;
+    scrollbar-width: none;
   }
+  .templates-scroll::-webkit-scrollbar { display: none; }
+  .tpl-btn {
+    flex-shrink: 0; border: 1px solid var(--border); border-radius: 20px;
+    padding: 7px 14px; background: var(--card); color: var(--text);
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; white-space: nowrap; transition: border-color .15s, background .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tpl-btn:active, .tpl-btn.active { background: rgba(232,200,122,.15); border-color: var(--accent); color: var(--accent); }
 
+  /* Steps */
+  .steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
   .step {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    padding: 16px;
-    display: grid;
-    grid-template-columns: 44px 1fr;
-    gap: 14px;
-    align-items: start;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 16px;
+    display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start;
+    transition: border-color .15s;
   }
-
   .step:focus-within { border-color: var(--blue); }
-
   .letter {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    font-weight: 800;
-    font-style: italic;
-    flex-shrink: 0;
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800; font-style: italic; flex-shrink: 0;
   }
-
   .C { background: rgba(74,158,255,.15);  color: var(--blue);   }
   .O { background: rgba(232,200,122,.15); color: var(--accent); }
   .R { background: rgba(255,100,100,.15); color: var(--red);    }
   .E { background: rgba(62,207,142,.15);  color: var(--green);  }
-
-  .step-body {}
-
-  .step-title {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 2px;
-  }
-
-  .step-desc {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 10px;
-  }
-
+  .step-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+  .step-desc  { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
   textarea {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-    padding: 10px 12px;
-    resize: none;
-    outline: none;
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-family: 'Inter', sans-serif;
+    font-size: 14px; line-height: 1.5; padding: 10px 12px;
+    resize: none; outline: none; overflow: hidden; min-height: 68px;
     transition: border-color .15s;
-    /* auto-height via JS */
-    overflow: hidden;
-    min-height: 72px;
   }
-
   textarea::placeholder { color: var(--muted); font-size: 13px; }
   textarea:focus { border-color: var(--blue); background: #16273f; }
 
-  .hint {
-    margin-top: 6px;
-    font-size: 11px;
-    color: var(--muted);
-    font-style: italic;
-    line-height: 1.4;
+  /* Sugestões */
+  .suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .sug {
+    font-size: 12px; padding: 4px 10px; border-radius: 14px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--muted); cursor: pointer; transition: color .15s, border-color .15s;
+    -webkit-tap-highlight-color: transparent;
   }
+  .sug:active { color: var(--text); border-color: var(--blue); background: rgba(74,158,255,.08); }
 
-  .hint b { color: rgba(232,200,122,.7); font-style: normal; }
-
-  /* ── CTA ── */
+  /* Botão gerar */
   .btn-gerar {
-    width: 100%;
-    background: linear-gradient(135deg, #e8c87a, #d4a842);
-    color: #0d1b2e;
-    border: none;
-    border-radius: var(--r);
-    padding: 16px;
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    margin-bottom: 20px;
+    width: 100%; background: linear-gradient(135deg, #e8c87a, #d4a842);
+    color: #0d1b2e; border: none; border-radius: var(--r);
+    padding: 16px; font-family: 'Inter', sans-serif;
+    font-size: 15px; font-weight: 800; cursor: pointer; margin-bottom: 20px;
     transition: opacity .15s, transform .1s;
     -webkit-tap-highlight-color: transparent;
   }
-
   .btn-gerar:active { opacity: .85; transform: scale(.98); }
 
-  /* ── Resultado ── */
-  .result {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    overflow: hidden;
-    display: none;
-  }
-
+  /* Resultado */
+  .result { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; display: none; margin-bottom: 16px; }
   .result.show { display: block; }
-
   .result-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--border);
   }
-
-  .result-bar span {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
+  .result-bar span { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
   .bar-actions { display: flex; gap: 8px; }
+  .btn-sm {
+    border-radius: 8px; padding: 6px 12px;
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700;
+    cursor: pointer; border: 1px solid var(--border);
+    -webkit-tap-highlight-color: transparent; transition: background .15s;
+  }
+  .btn-copy { background: transparent; color: var(--blue); border-color: rgba(74,158,255,.35); }
+  .btn-copy:active { background: rgba(74,158,255,.1); }
+  .btn-copy.ok { color: var(--green); border-color: rgba(62,207,142,.35); }
+  .btn-save { background: transparent; color: var(--accent); border-color: rgba(232,200,122,.35); }
+  .btn-save:active { background: rgba(232,200,122,.1); }
+  .btn-save.ok { color: var(--green); border-color: rgba(62,207,142,.35); }
+  .btn-clear-sm { background: transparent; color: var(--muted); }
+  #output { padding: 18px 16px; font-size: 14px; line-height: 1.8; white-space: pre-wrap; color: var(--text); }
 
-  .btn-copy, .btn-clear {
-    border-radius: 8px;
-    padding: 7px 14px;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    border: 1px solid var(--border);
+  /* Biblioteca */
+  .library { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+  .lib-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; cursor: pointer; user-select: none;
     -webkit-tap-highlight-color: transparent;
   }
-
-  .btn-copy {
-    background: transparent;
-    color: var(--blue);
-    border-color: rgba(74,158,255,.35);
-    transition: background .15s;
+  .lib-header-left { display: flex; align-items: center; gap: 10px; }
+  .lib-title { font-size: 13px; font-weight: 700; }
+  .lib-count {
+    font-size: 11px; font-weight: 700; background: rgba(232,200,122,.15);
+    color: var(--accent); border-radius: 10px; padding: 2px 8px;
   }
-  .btn-copy:active { background: rgba(74,158,255,.12); }
-  .btn-copy.ok { color: var(--green); border-color: rgba(62,207,142,.35); }
-
-  .btn-clear {
-    background: transparent;
-    color: var(--muted);
-    transition: color .15s;
+  .lib-toggle { color: var(--muted); font-size: 18px; transition: transform .2s; }
+  .lib-toggle.open { transform: rotate(180deg); }
+  .lib-body { display: none; border-top: 1px solid var(--border); }
+  .lib-body.open { display: block; }
+  .lib-empty { padding: 24px 16px; text-align: center; color: var(--muted); font-size: 13px; }
+  .lib-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; border-bottom: 1px solid var(--border); gap: 12px;
+    cursor: pointer; transition: background .15s;
+    -webkit-tap-highlight-color: transparent;
   }
-  .btn-clear:active { color: var(--text); }
-
-  #output {
-    padding: 18px 16px;
-    font-size: 14px;
-    line-height: 1.7;
+  .lib-item:last-child { border-bottom: none; }
+  .lib-item:active { background: rgba(255,255,255,.03); }
+  .lib-info { flex: 1; min-width: 0; }
+  .lib-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lib-date { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .lib-del {
+    flex-shrink: 0; background: transparent; border: none; color: var(--muted);
+    font-size: 16px; cursor: pointer; padding: 4px 8px; border-radius: 6px;
+    -webkit-tap-highlight-color: transparent; transition: color .15s;
   }
+  .lib-del:active { color: var(--red); }
 
-  .out-block { margin-bottom: 14px; }
-  .out-block:last-child { margin-bottom: 0; }
-
-  .out-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-bottom: 3px;
+  /* Modal de nome */
+  .modal-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
+    z-index: 100; align-items: flex-end; justify-content: center;
   }
+  .modal-bg.show { display: flex; }
+  .modal {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r) var(--r) 0 0; padding: 24px 20px 40px; width: 100%; max-width: 640px;
+  }
+  .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+  .modal input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-family: 'Inter', sans-serif;
+    font-size: 14px; padding: 12px 14px; outline: none; margin-bottom: 14px;
+    transition: border-color .15s;
+  }
+  .modal input:focus { border-color: var(--blue); }
+  .modal-btns { display: flex; gap: 10px; }
+  .modal-btns button {
+    flex: 1; border-radius: 10px; padding: 13px;
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; border: none; -webkit-tap-highlight-color: transparent;
+  }
+  .btn-confirm { background: var(--accent); color: #0d1b2e; }
+  .btn-cancel  { background: var(--surface); color: var(--muted); border: 1px solid var(--border) !important; }
 
-  .out-label.C { color: var(--blue); }
-  .out-label.O { color: var(--accent); }
-  .out-label.R { color: var(--red); }
-  .out-label.E { color: var(--green); }
-
-  .out-text { color: var(--text); }
-
-  /* ── Desktop ── */
   @media (min-width: 640px) {
-    body { padding: 40px 24px 80px; }
-    header h1 { font-size: 34px; }
-    .step { padding: 20px; gap: 16px; }
+    body { padding: 36px 24px 80px; }
+    header h1 { font-size: 30px; }
   }
 </style>
 </head>
@@ -253,49 +205,61 @@
 <div class="container">
 
   <header>
-    <h1>Anatomia do Prompt <em>C.O.R.E.</em></h1>
-    <p>4 ingredientes. Preencha e gere seu prompt pronto para copiar.</p>
+    <h1>Prompt <em>C.O.R.E.</em></h1>
+    <p>Monte o prompt certo em menos de 2 minutos.</p>
   </header>
 
+  <!-- Templates -->
+  <div class="section-label">Começar com um template</div>
+  <div class="templates-scroll">
+    <button class="tpl-btn" onclick="loadTemplate('clinica')">🏥 Clínica / Saúde</button>
+    <button class="tpl-btn" onclick="loadTemplate('varejo')">🛍️ Varejo / Loja</button>
+    <button class="tpl-btn" onclick="loadTemplate('conteudo')">📱 Criador de Conteúdo</button>
+    <button class="tpl-btn" onclick="loadTemplate('marketing')">📣 Marketing / Mídia</button>
+    <button class="tpl-btn" onclick="loadTemplate('food')">🍕 Food / Restaurante</button>
+    <button class="tpl-btn" onclick="loadTemplate('consultor')">💼 Consultor / Coach</button>
+  </div>
+
+  <!-- Steps -->
   <div class="steps">
 
     <div class="step">
       <div class="letter C">C</div>
-      <div class="step-body">
+      <div>
         <div class="step-title">Contexto</div>
-        <div class="step-desc">Quem é você, qual o negócio, qual a situação</div>
+        <div class="step-desc">Quem é você e qual é o cenário</div>
         <textarea id="C" placeholder="Ex: Sou dona de clínica de estética, 8 funcionárias, R$80k/mês de faturamento." oninput="auto(this)"></textarea>
-        <p class="hint"><b>Dica:</b> Quanto mais específico, melhor o resultado.</p>
+        <div class="suggestions" id="sug-C"></div>
       </div>
     </div>
 
     <div class="step">
       <div class="letter O">O</div>
-      <div class="step-body">
+      <div>
         <div class="step-title">Objetivo</div>
         <div class="step-desc">O que deve sair do outro lado — seja específico</div>
         <textarea id="O" placeholder="Ex: Quero 3 roteiros de stories para captar leads de procedimento facial." oninput="auto(this)"></textarea>
-        <p class="hint"><b>Dica:</b> Inclua quantidade, formato e finalidade.</p>
+        <div class="suggestions" id="sug-O"></div>
       </div>
     </div>
 
     <div class="step">
       <div class="letter R">R</div>
-      <div class="step-body">
+      <div>
         <div class="step-title">Restrições</div>
-        <div class="step-desc">O que NÃO pode: formato, tom, palavras vetadas</div>
-        <textarea id="R" placeholder="Ex: Tom acolhedor. Sem promessa de resultado. Máx 60s. Sem 'transforme sua vida'." oninput="auto(this)"></textarea>
-        <p class="hint"><b>Dica:</b> Restrições eliminam retrabalho.</p>
+        <div class="step-desc">O que NÃO pode aparecer no resultado</div>
+        <textarea id="R" placeholder="Ex: Tom acolhedor. Sem promessa de resultado. Máx 60s. Sem clichês." oninput="auto(this)"></textarea>
+        <div class="suggestions" id="sug-R"></div>
       </div>
     </div>
 
     <div class="step">
       <div class="letter E">E</div>
-      <div class="step-body">
+      <div>
         <div class="step-title">Exemplo</div>
         <div class="step-desc">Uma referência do que é bom (ou ruim)</div>
         <textarea id="E" placeholder="Ex: Bom: copy estilo do @marcaX. Ruim: textos com clichê de coach." oninput="auto(this)"></textarea>
-        <p class="hint"><b>Dica:</b> Um exemplo vale mais que mil adjetivos.</p>
+        <div class="suggestions" id="sug-E"></div>
       </div>
     </div>
 
@@ -303,88 +267,290 @@
 
   <button class="btn-gerar" onclick="gerar()">Gerar Prompt →</button>
 
+  <!-- Resultado -->
   <div class="result" id="result">
     <div class="result-bar">
-      <span>Prompt gerado</span>
+      <span>Prompt pronto</span>
       <div class="bar-actions">
-        <button class="btn-copy" id="btn-copy" onclick="copiar()">Copiar</button>
-        <button class="btn-clear" onclick="limpar()">Limpar</button>
+        <button class="btn-sm btn-copy" id="btn-copy" onclick="copiar()">Copiar</button>
+        <button class="btn-sm btn-save" id="btn-save" onclick="abrirModal()">Salvar</button>
+        <button class="btn-sm btn-clear-sm" onclick="limpar()">Limpar</button>
       </div>
     </div>
     <div id="output"></div>
   </div>
 
+  <!-- Biblioteca -->
+  <div class="library" id="library">
+    <div class="lib-header" onclick="toggleLib()">
+      <div class="lib-header-left">
+        <span class="lib-title">Minha Biblioteca</span>
+        <span class="lib-count" id="lib-count">0</span>
+      </div>
+      <span class="lib-toggle" id="lib-toggle">▾</span>
+    </div>
+    <div class="lib-body" id="lib-body">
+      <div class="lib-empty" id="lib-empty">Nenhum prompt salvo ainda.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal salvar -->
+<div class="modal-bg" id="modal-bg" onclick="fecharModal(event)">
+  <div class="modal">
+    <h3>Salvar prompt</h3>
+    <input type="text" id="modal-input" placeholder="Nome do prompt (ex: Stories Clínica Maio)" maxlength="60">
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="salvar()">Salvar</button>
+    </div>
+  </div>
 </div>
 
 <script>
-  // auto-resize textarea
-  function auto(el) {
+// ── Templates ──────────────────────────────────────────────
+const TEMPLATES = {
+  clinica: {
+    C: 'Sou dona de clínica de estética, 8 funcionárias, atendo 120 clientes/mês, faturamento de R$80k. Trabalho com procedimentos faciais e corporais premium.',
+    O: 'Criar 3 roteiros de stories (máx 60s cada) para captar leads interessados em procedimento de bioestimulação facial.',
+    R: 'Tom acolhedor e profissional. Sem promessa de resultado garantido. Sem linguagem técnica excessiva. Sem expressões como "transforme sua vida" ou "realize seu sonho".',
+    E: 'Bom: tom da @drpaularibeiro — direto, educativo, confiante. Ruim: dramático, apelativo, cheio de emojis.'
+  },
+  varejo: {
+    C: 'Gerencio uma loja de móveis e eletrodomésticos com 3 unidades no interior de MG, ticket médio de R$1.200, público classe C e D.',
+    O: 'Criar 5 posts para o Instagram anunciando promoção de fim de mês com parcelamento em 24x sem juros.',
+    R: 'Linguagem simples, sem termos financeiros complexos. Sem comparar com concorrentes pelo nome. Máximo 3 linhas por post.',
+    E: 'Bom: comunicação direta das Casas Bahia pré-2020. Ruim: copy corporativo, frio, sem apelo para o cotidiano.'
+  },
+  conteudo: {
+    C: 'Sou criador de conteúdo sobre finanças pessoais no Instagram e YouTube, 45k seguidores, público jovem adulto de 22–35 anos.',
+    O: 'Gerar 7 ideias de post para a semana com gancho forte, um para cada dia, tema: como sair das dívidas em 2025.',
+    R: 'Sem linguagem de coach. Sem promessa de enriquecimento rápido. Sem jargão financeiro. Tom de amigo que entende do assunto.',
+    E: 'Bom: estilo do @me.poupe — leve, direto, com humor seco. Ruim: guru financeiro com foto de Lamborghini.'
+  },
+  marketing: {
+    C: 'Sou gerente de marketing de uma rede de varejo com 40 lojas no sudeste. Budget mensal de mídia: R$150k. Trabalhamos com TV aberta, rádio e digital.',
+    O: 'Criar um briefing de campanha de inverno para aumentar o tráfego nas lojas físicas em 20% no mês de julho.',
+    R: 'Sem foco exclusivo em digital. Deve incluir mídia offline. Linguagem executiva, direto ao ponto. Máximo 1 página.',
+    E: 'Bom: briefings da Woli Mídia — objetivos claros, métricas definidas, público segmentado. Ruim: genérico, sem dados.'
+  },
+  food: {
+    C: 'Dono de pizzaria artesanal em Belo Horizonte, 5 anos no mercado, delivery próprio e salão com 40 lugares, ticket médio R$85.',
+    O: 'Criar uma sequência de 4 mensagens de WhatsApp para reativar clientes que não pedem há mais de 30 dias.',
+    R: 'Tom próximo e descontraído. Sem parecer spam. Máximo 3 linhas por mensagem. Sem desconto excessivo que desvalorize o produto.',
+    E: 'Bom: mensagem de um amigo que te convida pra comer. Ruim: promoção genérica de fast food com caps lock.'
+  },
+  consultor: {
+    C: 'Sou consultor de gestão para pequenas empresas, atendo negócios de R$500k a R$3M de faturamento, foco em processos e time.',
+    O: 'Criar um e-mail de prospecção fria para donos de restaurantes oferecendo diagnóstico gratuito de 30 minutos.',
+    R: 'Sem parecer vendedor. Sem listar todos os serviços. Máximo 5 linhas. Foco em dor específica do setor de food service.',
+    E: 'Bom: e-mail curto e personalizado estilo consultoria McKinsey — direto, sem floreio. Ruim: e-mail corporativo de 3 parágrafos com proposta completa.'
+  }
+};
+
+const SUGESTOES = {
+  C: ['Meu negócio é...', 'Atendo...', 'Meu diferencial é...', 'Meu público é...'],
+  O: ['Criar 3 opções de...', 'Escrever um post que...', 'Gerar uma sequência de...', 'Elaborar um roteiro de...'],
+  R: ['Sem clichês', 'Tom informal', 'Máx 3 linhas', 'Sem jargão técnico'],
+  E: ['Bom: estilo de...', 'Ruim: evitar...', 'Referência: @...', 'Similar ao tom de...']
+};
+
+function loadTemplate(key) {
+  const t = TEMPLATES[key];
+  if (!t) return;
+  Object.entries(t).forEach(([k, v]) => {
+    const el = document.getElementById(k);
+    el.value = v;
     el.style.height = 'auto';
     el.style.height = el.scrollHeight + 'px';
-  }
+  });
+  document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('result').classList.remove('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-  const LABELS = { C: 'CONTEXTO', O: 'OBJETIVO', R: 'RESTRIÇÕES', E: 'EXEMPLO' };
+// ── Auto-resize ─────────────────────────────────────────────
+function auto(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
 
-  function gerar() {
-    const vals = { C: v('C'), O: v('O'), R: v('R'), E: v('E') };
-    if (!Object.values(vals).some(Boolean)) return shake();
-
-    const out = document.getElementById('output');
-    out.innerHTML = '';
-
-    Object.entries(vals).forEach(([k, txt]) => {
-      if (!txt) return;
-      const block = document.createElement('div');
-      block.className = 'out-block';
-      block.innerHTML = `<div class="out-label ${k}">[${k}] ${LABELS[k]}</div><div class="out-text"></div>`;
-      block.querySelector('.out-text').textContent = txt;
-      out.appendChild(block);
+// ── Sugestões ───────────────────────────────────────────────
+function renderSugestoes() {
+  ['C','O','R','E'].forEach(k => {
+    const wrap = document.getElementById('sug-' + k);
+    wrap.innerHTML = '';
+    SUGESTOES[k].forEach(txt => {
+      const btn = document.createElement('button');
+      btn.className = 'sug';
+      btn.textContent = txt;
+      btn.onclick = () => {
+        const ta = document.getElementById(k);
+        const sep = ta.value.trim() ? ' ' : '';
+        ta.value = ta.value.trim() + sep + txt;
+        auto(ta);
+        ta.focus();
+      };
+      wrap.appendChild(btn);
     });
+  });
+}
+renderSugestoes();
 
-    const res = document.getElementById('result');
-    res.classList.add('show');
-    res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+// ── Gerar prompt elaborado ──────────────────────────────────
+function gerar() {
+  const C = v('C'), O = v('O'), R = v('R'), E = v('E');
+  if (!C && !O && !R && !E) { highlight(); return; }
 
-    const btn = document.getElementById('btn-copy');
-    btn.textContent = 'Copiar';
-    btn.classList.remove('ok');
-  }
+  let prompt = '';
 
-  function copiar() {
-    const partes = ['C','O','R','E']
-      .map(k => { const t = v(k); return t ? `[${LABELS[k]}]\n${t}` : null; })
-      .filter(Boolean)
-      .join('\n\n');
+  if (C) prompt += `Contexto sobre quem faz o pedido:\n${C}\n\n`;
 
-    navigator.clipboard.writeText(partes).catch(() => {
-      const ta = Object.assign(document.createElement('textarea'), { value: partes });
-      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-    });
+  if (O) prompt += `Sua tarefa:\n${O}\n\n`;
 
-    const btn = document.getElementById('btn-copy');
-    btn.textContent = '✓ Copiado!';
-    btn.classList.add('ok');
-    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('ok'); }, 2500);
-  }
+  if (R) prompt += `Regras que devem ser seguidas à risca:\n${R}\n\n`;
 
-  function limpar() {
-    ['C','O','R','E'].forEach(k => {
-      const el = document.getElementById(k);
-      el.value = '';
-      el.style.height = '';
-    });
-    document.getElementById('result').classList.remove('show');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  if (E) prompt += `Referência de qualidade esperada:\n${E}\n\n`;
 
-  function shake() {
-    document.querySelector('.btn-gerar').style.animation = 'none';
-    // visual feedback: briefly highlight first empty textarea
-    const first = ['C','O','R','E'].map(k => document.getElementById(k)).find(el => !el.value.trim());
-    if (first) { first.focus(); first.style.borderColor = '#ff6464'; setTimeout(() => first.style.borderColor = '', 800); }
-  }
+  prompt += 'Agora execute com base em tudo que foi informado acima. Seja direto, objetivo e entregue exatamente o que foi pedido.';
 
-  function v(id) { return document.getElementById(id).value.trim(); }
+  document.getElementById('output').textContent = prompt;
+  const res = document.getElementById('result');
+  res.classList.add('show');
+
+  const bs = document.getElementById('btn-save');
+  bs.textContent = 'Salvar';
+  bs.classList.remove('ok');
+  const bc = document.getElementById('btn-copy');
+  bc.textContent = 'Copiar';
+  bc.classList.remove('ok');
+
+  setTimeout(() => res.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+}
+
+// ── Copiar ──────────────────────────────────────────────────
+function copiar() {
+  const txt = document.getElementById('output').textContent;
+  if (!txt) return;
+  navigator.clipboard.writeText(txt).catch(() => {
+    const ta = Object.assign(document.createElement('textarea'), { value: txt });
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+  });
+  const btn = document.getElementById('btn-copy');
+  btn.textContent = '✓ Copiado!'; btn.classList.add('ok');
+  setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('ok'); }, 2500);
+}
+
+// ── Modal salvar ────────────────────────────────────────────
+function abrirModal() {
+  const modal = document.getElementById('modal-bg');
+  const input = document.getElementById('modal-input');
+  input.value = '';
+  modal.classList.add('show');
+  setTimeout(() => input.focus(), 100);
+}
+
+function fecharModal(e) {
+  if (e && e.target !== document.getElementById('modal-bg')) return;
+  document.getElementById('modal-bg').classList.remove('show');
+}
+
+document.getElementById('modal-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') salvar();
+  if (e.key === 'Escape') document.getElementById('modal-bg').classList.remove('show');
+});
+
+// ── Salvar na biblioteca ────────────────────────────────────
+function salvar() {
+  const nome = document.getElementById('modal-input').value.trim();
+  if (!nome) { document.getElementById('modal-input').focus(); return; }
+
+  const txt = document.getElementById('output').textContent;
+  if (!txt) return;
+
+  const lib = getLib();
+  lib.unshift({ id: Date.now(), nome, texto: txt, data: new Date().toLocaleDateString('pt-BR') });
+  saveLib(lib);
+  renderLib();
+
+  document.getElementById('modal-bg').classList.remove('show');
+  const btn = document.getElementById('btn-save');
+  btn.textContent = '✓ Salvo!'; btn.classList.add('ok');
+  setTimeout(() => { btn.textContent = 'Salvar'; btn.classList.remove('ok'); }, 2500);
+
+  const libBody = document.getElementById('lib-body');
+  if (!libBody.classList.contains('open')) toggleLib();
+}
+
+// ── Biblioteca (localStorage) ───────────────────────────────
+function getLib() { try { return JSON.parse(localStorage.getItem('core_lib') || '[]'); } catch { return []; } }
+function saveLib(lib) { localStorage.setItem('core_lib', JSON.stringify(lib)); }
+
+function renderLib() {
+  const lib = getLib();
+  const body = document.getElementById('lib-body');
+  const empty = document.getElementById('lib-empty');
+  document.getElementById('lib-count').textContent = lib.length;
+
+  const items = body.querySelectorAll('.lib-item');
+  items.forEach(i => i.remove());
+
+  if (lib.length === 0) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+
+  lib.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'lib-item';
+    div.innerHTML = `
+      <div class="lib-info">
+        <div class="lib-name">${esc(item.nome)}</div>
+        <div class="lib-date">${item.data}</div>
+      </div>
+      <button class="lib-del" title="Excluir" onclick="excluir(${item.id}, event)">✕</button>`;
+    div.addEventListener('click', () => carregarPrompt(item));
+    body.appendChild(div);
+  });
+}
+
+function carregarPrompt(item) {
+  document.getElementById('output').textContent = item.texto;
+  document.getElementById('result').classList.add('show');
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function excluir(id, e) {
+  e.stopPropagation();
+  const lib = getLib().filter(i => i.id !== id);
+  saveLib(lib); renderLib();
+}
+
+function toggleLib() {
+  const body = document.getElementById('lib-body');
+  const tog  = document.getElementById('lib-toggle');
+  body.classList.toggle('open');
+  tog.classList.toggle('open');
+}
+
+function esc(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ── Limpar ──────────────────────────────────────────────────
+function limpar() {
+  ['C','O','R','E'].forEach(k => { const el = document.getElementById(k); el.value = ''; el.style.height = ''; });
+  document.getElementById('result').classList.remove('show');
+  document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function highlight() {
+  const first = ['C','O','R','E'].map(k => document.getElementById(k)).find(el => !el.value.trim());
+  if (first) { first.focus(); first.style.borderColor = '#ff6464'; setTimeout(() => first.style.borderColor = '', 800); }
+}
+
+function v(id) { return document.getElementById(id).value.trim(); }
+
+renderLib();
 </script>
 </body>
 </html>
