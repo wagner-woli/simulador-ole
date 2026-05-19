@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casas Bahia Pay · Modelagem de Receita v5 — Proposta Cliente</title>
+<style>
+  :root{
+    --bg:#f6f4f5;
+    --card:#ffffff;
+    --primary:#C8102E;
+    --primary-2:#8B0A1F;
+    --primary-soft:#fde8eb;
+    --text:#1a0a0d;
+    --text-2:#5c4b50;
+    --text-3:#a89499;
+    --border:#ebdfe2;
+    --row-alt:#fbf7f8;
+    --negative:#b91c1c;
+    --negative-soft:#fee2e2;
+    --positive:#15803d;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(40,10,15,.04),0 8px 24px rgba(40,10,15,.06);
+    --shadow-strong:0 4px 12px rgba(200,16,46,.18);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+
+  .header{background:linear-gradient(135deg,var(--primary-2),var(--primary));color:#fff;padding:24px 20px}
+  .header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand-mark{width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;border:1px solid rgba(255,255,255,.22);}
+  .brand-text{font-size:13px;color:rgba(255,255,255,.82);letter-spacing:.5px;text-transform:uppercase}
+  .brand-name{font-size:18px;font-weight:600;line-height:1.2}
+  h1{margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em;line-height:1.3}
+  .subtitle{color:rgba(255,255,255,.82);font-size:14px;margin-top:2px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22);padding:10px 14px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;min-height:44px;transition:background .15s,transform .05s;}
+  .btn:hover{background:rgba(255,255,255,.2)}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:#fff;color:var(--primary-2);border-color:#fff;font-weight:600}
+  .btn-primary:hover{background:#fdf2f4}
+
+  main{max-width:1400px;margin:0 auto;padding:24px 16px 8px}
+
+  .quick-result{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:16px;}
+  @media(min-width:640px){.quick-result{grid-template-columns:1fr 1fr}}
+  .qr-card{background:linear-gradient(135deg,#fdeef0,#fde8eb);border:1px solid #f3c2c8;border-radius:var(--radius);padding:18px 20px;}
+  .qr-card.highlight{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;border-color:var(--primary);box-shadow:var(--shadow-strong);}
+  .qr-label{font-size:12px;letter-spacing:.5px;text-transform:uppercase;font-weight:700;color:var(--primary-2);margin-bottom:6px;}
+  .qr-card.highlight .qr-label{color:rgba(255,255,255,.85)}
+  .qr-value{font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.1;color:var(--primary-2);}
+  .qr-card.highlight .qr-value{color:#fff}
+  .qr-sub{font-size:13px;color:var(--text-2);margin-top:4px}
+  .qr-card.highlight .qr-sub{color:rgba(255,255,255,.82)}
+
+  .params{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;}
+  .params-title{font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.5px;align-self:center;margin-right:4px;}
+  .param-group{display:flex;flex-direction:column;gap:4px;}
+  .param-label{font-size:11px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.4px;}
+  .param-wrap{display:flex;align-items:stretch;background:#fff;border:1.5px solid #dbb9bf;border-radius:8px;transition:border-color .15s,box-shadow .15s;}
+  .param-wrap:hover{border-color:var(--primary)}
+  .param-wrap:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(200,16,46,.16);}
+  .param-affix{display:flex;align-items:center;padding:0 8px;color:var(--text-2);font-size:13px;font-weight:600;background:#fbf7f8;}
+  .param-prefix{border-right:1px solid var(--border);border-radius:6px 0 0 6px;}
+  .param-suffix{border-left:1px solid var(--border);border-radius:0 6px 6px 0;}
+  .param-input{border:0;background:transparent;outline:none;padding:0 8px;font-size:14px;color:var(--text);min-height:38px;width:76px;font-variant-numeric:tabular-nums;text-align:right;}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:24px;}
+  @media(min-width:680px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:1100px){.grid{grid-template-columns:repeat(4,1fr)}}
+
+  .sku{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;}
+  .sku-head{background:linear-gradient(180deg,#fbf7f8,#fff);padding:14px 16px 10px;border-bottom:1px solid var(--border);}
+  .sku-head-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .sku-tag{display:inline-block;background:var(--primary-soft);color:var(--primary-2);font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:3px 8px;border-radius:6px;}
+  .sku-mix{font-size:12px;color:var(--text-3);font-weight:600;}
+  .sku-title{font-size:16px;font-weight:600;color:var(--text)}
+
+  .inputs{padding:12px 16px;border-bottom:1px solid var(--border);background:var(--row-alt);}
+  .field{margin-bottom:8px}
+  .field:last-child{margin-bottom:0}
+  .field-label{display:block;font-size:11px;font-weight:600;color:var(--text-2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;}
+  .input-wrap{display:flex;align-items:stretch;background:#fff;border:1.5px solid #dbb9bf;border-radius:8px;transition:border-color .15s,box-shadow .15s;}
+  .input-wrap:hover{border-color:var(--primary)}
+  .input-wrap:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(200,16,46,.16);}
+  .input-prefix,.input-suffix{display:flex;align-items:center;justify-content:center;padding:0 10px;color:var(--text-2);font-size:13px;font-weight:600;background:#fbf7f8;}
+  .input-prefix{border-right:1px solid var(--border);border-radius:6px 0 0 6px;}
+  .input-suffix{border-left:1px solid var(--border);border-radius:0 6px 6px 0;}
+  .input{flex:1;border:0;background:transparent;outline:none;padding:0 10px;font-size:15px;color:var(--text);min-height:44px;width:100%;font-variant-numeric:tabular-nums;text-align:right;}
+  .stepper{display:flex;gap:5px;align-items:stretch}
+  .stepper .input-wrap{flex:1;min-width:0}
+  .step-btn{flex-shrink:0;width:40px;min-height:44px;background:#fff;color:var(--primary);border:1.5px solid #dbb9bf;border-radius:8px;font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s,border-color .12s,transform .05s;user-select:none;}
+  .step-btn:hover{background:var(--primary-soft);border-color:var(--primary)}
+  .step-btn:active{transform:translateY(1px)}
+
+  .dre{padding:10px 16px 14px;flex:1;display:flex;flex-direction:column;}
+  .dre-row{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;font-size:13px;}
+  .dre-row.muted{font-size:12px;color:var(--text-3)}
+  .dre-row.muted .dre-v{color:var(--text-2);font-weight:500}
+  .dre-row.deduct .dre-k::before{content:"− ";color:var(--negative);font-weight:700;}
+  .dre-row.eq .dre-k::before{content:"= ";color:var(--text-3);font-weight:600;}
+  .dre-row.eq{font-weight:600}
+  .dre-k{color:var(--text-2)}
+  .dre-v{font-variant-numeric:tabular-nums;font-weight:500;color:var(--text)}
+  .dre-sep{border:0;border-top:1px dashed var(--border);margin:6px 0;}
+
+  .results{margin-top:auto;padding-top:10px;border-top:2px solid var(--primary);}
+  .res-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;}
+  .res-row .rl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+  .res-row .rv{font-variant-numeric:tabular-nums;font-weight:700;}
+  .res-row.imun .rl{color:var(--positive)}
+  .res-row.imun .rv{font-size:18px;color:var(--positive)}
+  .res-row.sem-imun .rl{color:var(--text-2)}
+  .res-row.sem-imun .rv{font-size:14px;color:var(--text-2)}
+  .res-row.impacto .rl{color:var(--negative);font-size:10px;}
+  .res-row.impacto .rv{font-size:12px;color:var(--negative)}
+
+  .consolidado{background:linear-gradient(180deg,var(--primary),var(--primary-2));color:#fff;border-radius:var(--radius);padding:24px 20px;box-shadow:var(--shadow-strong);margin-bottom:24px;}
+  .cons-title{font-size:13px;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.78);font-weight:600;margin-bottom:16px;}
+  .cons-grid{display:grid;gap:12px;grid-template-columns:1fr;}
+  @media(min-width:640px){.cons-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:960px){.cons-grid{grid-template-columns:repeat(4,1fr)}}
+  .cons-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:14px 16px;}
+  .cons-card .cl{font-size:11px;color:rgba(255,255,255,.78);text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+  .cons-card .cv{font-size:20px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums;}
+  .cons-card .csub{font-size:12px;color:rgba(255,255,255,.72);margin-top:4px;}
+  .cons-card.hi{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.45);}
+  .cons-card.hi .cv{font-size:24px;}
+  .cons-card.neg{background:rgba(185,28,28,.3);border-color:rgba(255,160,160,.3);}
+  .cons-card.neg .cv{color:#fca5a5;font-size:20px;}
+
+  footer{max-width:1400px;margin:0 auto;padding:16px;color:var(--text-3);font-size:12px;text-align:center;border-top:1px solid var(--border);margin-top:8px;}
+
+  @media print{
+    body{background:#fff}
+    .actions,.btn{display:none}
+    .header{background:#C8102E !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .consolidado{background:#C8102E !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .grid{grid-template-columns:repeat(4,1fr) !important;gap:8px}
+    main{padding:12px}
+    .sku{box-shadow:none;break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark">CB</div>
+      <div>
+        <div class="brand-text">Casas Bahia Pay · Educação</div>
+        <div class="brand-name">Modelagem de Receita</div>
+      </div>
+    </div>
+    <div style="flex:1;min-width:200px">
+      <h1>Curso Online ODS — Projeção de Receita · Proposta Cliente</h1>
+      <div class="subtitle">Comissão CB 15% · Custo Woli · BanQi 20% · Cenários imunidade fiscal</div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btn-reset" type="button">Novo cenário</button>
+      <button class="btn btn-primary" id="btn-print" type="button">Exportar PDF</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="quick-result">
+    <div class="qr-card">
+      <div class="qr-label">Modelo de Negócios</div>
+      <div class="qr-sub" style="font-size:14px;color:var(--text);line-height:1.6;margin-top:4px">
+        Casas Bahia Pay faz a intermediação, Casas Bahia vende e Woli fatura o cliente final. Casas Bahia Pay emite nota fiscal de intermediação para a Woli.
+      </div>
+    </div>
+    <div class="qr-card highlight">
+      <div class="qr-label">Receita Bruta Casas Bahia Pay</div>
+      <div class="qr-value" id="qr-receita">R$ 0,00</div>
+      <div class="qr-sub">Valor total da nota fiscal de intermediação a ser emitida</div>
+    </div>
+  </section>
+
+  <div class="params">
+    <span class="params-title">Parâmetros globais</span>
+    <div class="param-group">
+      <label class="param-label" for="p-cb">% Comissão CB</label>
+      <div class="param-wrap">
+        <input class="param-input" id="p-cb" inputmode="decimal" type="text" value="15,00">
+        <span class="param-affix param-suffix">%</span>
+      </div>
+    </div>
+    <div class="param-group">
+      <label class="param-label" for="p-trib">% Tributos Woli</label>
+      <div class="param-wrap">
+        <input class="param-input" id="p-trib" inputmode="decimal" type="text" value="14,25">
+        <span class="param-affix param-suffix">%</span>
+      </div>
+    </div>
+    <div class="param-group">
+      <label class="param-label" for="p-banqi">% BanQi</label>
+      <div class="param-wrap">
+        <input class="param-input" id="p-banqi" inputmode="decimal" type="text" value="20,00">
+        <span class="param-affix param-suffix">%</span>
+      </div>
+    </div>
+    <div class="param-group">
+      <label class="param-label" for="p-custo">Custo Woli / contrato</label>
+      <div class="param-wrap">
+        <span class="param-affix param-prefix">R$</span>
+        <input class="param-input" id="p-custo" inputmode="decimal" type="text" value="11,67">
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <section class="consolidado">
+    <div class="cons-title">Resultado consolidado · Casas Bahia Pay Educação</div>
+    <div class="cons-grid">
+      <div class="cons-card">
+        <div class="cl">Contratos Ano 1</div>
+        <div class="cv" id="c-contratos">0</div>
+        <div class="csub" id="c-receita-sub">Receita cliente: R$ 0,00</div>
+      </div>
+      <div class="cons-card">
+        <div class="cl">Comissão CB</div>
+        <div class="cv" id="c-cb">R$ 0,00</div>
+        <div class="csub" id="c-custo-sub">Custo Woli: R$ 0,00</div>
+      </div>
+      <div class="cons-card hi">
+        <div class="cl">Resultado c/ Imunidade</div>
+        <div class="cv" id="c-res-imun">R$ 0,00</div>
+        <div class="csub">após BanQi + Comissão CB, s/ tributos</div>
+      </div>
+      <div class="cons-card neg">
+        <div class="cl">Resultado s/ Imunidade</div>
+        <div class="cv" id="c-res-sem">R$ 0,00</div>
+        <div class="csub" id="c-impacto-sub">impacto: R$ 0,00</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Documento confidencial — apresentação Casas Bahia Pay Educação</footer>
+
+<script>
+(() => {
+  'use strict';
+
+  const SKUS = [
+    { id:1, label:'Unitário',  titulo:'Acesso por 1 mês',    valorDefault:19.90,  contratosDefault:328680 },
+    { id:2, label:'12 meses', titulo:'Acesso por 12 meses', valorDefault:150.00, contratosDefault:164340 },
+    { id:3, label:'18 meses', titulo:'Acesso por 18 meses', valorDefault:219.60, contratosDefault:164340 },
+    { id:4, label:'24 meses', titulo:'Acesso por 24 meses', valorDefault:249.60, contratosDefault:164340 },
+  ];
+
+  const STORAGE_KEY = 'woli_cb_v5_proposta';
+
+  const fmtBRL = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
+  const fmtNum = new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtInt = new Intl.NumberFormat('pt-BR');
+  const brl = v => fmtBRL.format(v || 0);
+
+  function parseNum(str){
+    if(str === null || str === undefined) return 0;
+    const s = String(str).trim().replace(/\./g,'').replace(',','.');
+    const n = parseFloat(s);
+    return isFinite(n) && n >= 0 ? n : 0;
+  }
+  function parseIntVal(str){
+    const s = String(str || '').replace(/\D/g,'');
+    const n = parseInt(s, 10);
+    return isFinite(n) && n >= 0 ? n : 0;
+  }
+
+  // Build SKU cards
+  const grid = document.getElementById('grid');
+  SKUS.forEach(s => {
+    const card = document.createElement('article');
+    card.className = 'sku';
+    card.innerHTML = `
+      <div class="sku-head">
+        <div class="sku-head-top">
+          <span class="sku-tag">${s.label}</span>
+          <span class="sku-mix" id="mix-${s.id}">Mix: —</span>
+        </div>
+        <div class="sku-title">${s.titulo}</div>
+      </div>
+      <div class="inputs">
+        <div class="field">
+          <label class="field-label" for="valor-${s.id}">Valor total do plano</label>
+          <div class="input-wrap">
+            <span class="input-prefix">R$</span>
+            <input class="input" id="valor-${s.id}" inputmode="decimal" type="text" value="${fmtNum.format(s.valorDefault)}">
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="qtd-${s.id}">Contratos Ano 1</label>
+          <div class="stepper">
+            <button class="step-btn" type="button" data-step="-10000" data-target="qtd-${s.id}">−</button>
+            <div class="input-wrap">
+              <span class="input-prefix">#</span>
+              <input class="input" id="qtd-${s.id}" inputmode="numeric" type="text" value="${fmtInt.format(s.contratosDefault)}">
+            </div>
+            <button class="step-btn" type="button" data-step="10000" data-target="qtd-${s.id}">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="dre">
+        <div class="dre-row muted">
+          <span class="dre-k">Receita Cliente</span>
+          <span class="dre-v" id="d-rc-${s.id}">—</span>
+        </div>
+        <div class="dre-row deduct muted">
+          <span class="dre-k">Custo Woli</span>
+          <span class="dre-v" id="d-cw-${s.id}">—</span>
+        </div>
+        <div class="dre-row eq">
+          <span class="dre-k">Comissão Bruta c/ Imunidade</span>
+          <span class="dre-v" id="d-cbi-${s.id}">—</span>
+        </div>
+        <div class="dre-row deduct muted">
+          <span class="dre-k">Tributos Woli (s/ imunidade)</span>
+          <span class="dre-v" id="d-tr-${s.id}">—</span>
+        </div>
+        <div class="dre-row eq">
+          <span class="dre-k">Comissão Bruta s/ Imunidade</span>
+          <span class="dre-v" id="d-cbs-${s.id}">—</span>
+        </div>
+        <hr class="dre-sep">
+        <div class="dre-row deduct muted">
+          <span class="dre-k">Comissão CB</span>
+          <span class="dre-v" id="d-ccb-${s.id}">—</span>
+        </div>
+        <div class="dre-row deduct muted">
+          <span class="dre-k">BanQi (20% s/ com. bruta)</span>
+          <span class="dre-v" id="d-bq-${s.id}">—</span>
+        </div>
+        <div class="results">
+          <div class="res-row imun">
+            <span class="rl">Resultado c/ Imunidade</span>
+            <span class="rv" id="r-imun-${s.id}">—</span>
+          </div>
+          <div class="res-row sem-imun">
+            <span class="rl">Resultado s/ Imunidade</span>
+            <span class="rv" id="r-sem-${s.id}">—</span>
+          </div>
+          <div class="res-row impacto">
+            <span class="rl">Impacto s/ imunidade</span>
+            <span class="rv" id="r-imp-${s.id}">—</span>
+          </div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  function setText(id, val){
+    const el = document.getElementById(id);
+    if(el) el.textContent = val;
+  }
+
+  function render(){
+    const pctCB    = parseNum(document.getElementById('p-cb').value)    / 100;
+    const pctTrib  = parseNum(document.getElementById('p-trib').value)  / 100;
+    const pctBanQi = parseNum(document.getElementById('p-banqi').value) / 100;
+    const custoPC  = parseNum(document.getElementById('p-custo').value);
+
+    let totContratos=0, totReceita=0, totCustoWoli=0, totCB=0;
+    let totResImun=0, totResSem=0;
+
+    SKUS.forEach(s => {
+      const valor     = parseNum(document.getElementById(`valor-${s.id}`).value);
+      const contratos = parseIntVal(document.getElementById(`qtd-${s.id}`).value);
+      const blank     = contratos <= 0 || valor <= 0;
+      const show      = v => blank ? '—' : brl(v);
+
+      const rc    = valor * contratos;
+      const cw    = custoPC * contratos;
+      const cbi   = rc - cw;
+      const trib  = rc * pctTrib;
+      const cbs   = cbi - trib;
+      const ccb   = rc * pctCB;
+      const bqImun = cbi * pctBanQi;
+      const bqSem  = cbs * pctBanQi;
+      const rImun  = cbi - bqImun - ccb;
+      const rSem   = cbs - bqSem  - ccb;
+      const imp    = rSem - rImun;
+
+      setText(`d-rc-${s.id}`,   show(rc));
+      setText(`d-cw-${s.id}`,   show(cw));
+      setText(`d-cbi-${s.id}`,  show(cbi));
+      setText(`d-tr-${s.id}`,   show(trib));
+      setText(`d-cbs-${s.id}`,  show(cbs));
+      setText(`d-ccb-${s.id}`,  show(ccb));
+      setText(`d-bq-${s.id}`,   blank ? '—' : brl(bqImun));
+      setText(`r-imun-${s.id}`, show(rImun));
+      setText(`r-sem-${s.id}`,  show(rSem));
+      setText(`r-imp-${s.id}`,  blank ? '—' : brl(imp));
+
+      totContratos += contratos;
+      totReceita   += rc;
+      totCustoWoli += cw;
+      totCB        += ccb;
+      totResImun   += rImun;
+      totResSem    += rSem;
+    });
+
+    SKUS.forEach(s => {
+      const c = parseIntVal(document.getElementById(`qtd-${s.id}`).value);
+      const mix = totContratos > 0 ? (c / totContratos * 100) : 0;
+      setText(`mix-${s.id}`, totContratos > 0 ? `Mix: ${fmtNum.format(mix)}%` : 'Mix: —');
+    });
+
+    const impactoTotal = totResSem - totResImun;
+
+    setText('qr-receita',      brl(totReceita));
+    setText('c-contratos',     fmtInt.format(totContratos));
+    setText('c-receita-sub',   `Receita cliente: ${brl(totReceita)}`);
+    setText('c-cb',            brl(totCB));
+    setText('c-custo-sub',     `Custo Woli: ${brl(totCustoWoli)}`);
+    setText('c-res-imun',      brl(totResImun));
+    setText('c-res-sem',       brl(totResSem));
+    setText('c-impacto-sub',   `impacto s/ imunidade: ${brl(impactoTotal)}`);
+
+    saveState();
+  }
+
+  function saveState(){
+    try{
+      const state = {
+        skus: SKUS.map(s => ({
+          valor: document.getElementById(`valor-${s.id}`).value,
+          qtd:   document.getElementById(`qtd-${s.id}`).value,
+        })),
+        params: {
+          cb:    document.getElementById('p-cb').value,
+          trib:  document.getElementById('p-trib').value,
+          banqi: document.getElementById('p-banqi').value,
+          custo: document.getElementById('p-custo').value,
+        }
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }catch(e){}
+  }
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      const st = JSON.parse(raw);
+      if(!st) return;
+      if(Array.isArray(st.skus)){
+        SKUS.forEach((s,i) => {
+          const it = st.skus[i];
+          if(!it) return;
+          const set = (id, v) => { if(typeof v === 'string') document.getElementById(id).value = v; };
+          set(`valor-${s.id}`, it.valor);
+          set(`qtd-${s.id}`,   it.qtd);
+        });
+      }
+      if(st.params){
+        const set = (id, v) => { if(typeof v === 'string') document.getElementById(id).value = v; };
+        set('p-cb',    st.params.cb);
+        set('p-trib',  st.params.trib);
+        set('p-banqi', st.params.banqi);
+        set('p-custo', st.params.custo);
+      }
+    }catch(e){}
+  }
+
+  function reset(){
+    SKUS.forEach(s => {
+      document.getElementById(`valor-${s.id}`).value = fmtNum.format(s.valorDefault);
+      document.getElementById(`qtd-${s.id}`).value   = fmtInt.format(s.contratosDefault);
+    });
+    document.getElementById('p-cb').value    = '15,00';
+    document.getElementById('p-trib').value  = '14,25';
+    document.getElementById('p-banqi').value = '20,00';
+    document.getElementById('p-custo').value = '11,67';
+    render();
+  }
+
+  function fmtQtdLive(input){
+    const cursor = input.selectionStart || 0;
+    const before = input.value;
+    const digits = before.replace(/\D/g,'');
+    const formatted = digits ? fmtInt.format(parseInt(digits,10)) : '';
+    if(formatted === before) return;
+    const dc = before.slice(0,cursor).replace(/\D/g,'').length;
+    input.value = formatted;
+    let pos=0, cnt=0;
+    for(let i=0; i<formatted.length && cnt<dc; i++){
+      if(/\d/.test(formatted[i])) cnt++;
+      pos = i+1;
+    }
+    try{ input.setSelectionRange(pos,pos); }catch(e){}
+  }
+
+  document.querySelectorAll('.input, .param-input').forEach(inp => {
+    inp.addEventListener('input', render);
+    inp.addEventListener('focus', () => inp.select());
+  });
+
+  SKUS.forEach(s => {
+    const q = document.getElementById(`qtd-${s.id}`);
+    const v = document.getElementById(`valor-${s.id}`);
+    q.addEventListener('input', () => fmtQtdLive(q));
+    q.addEventListener('blur', () => {
+      const n = parseIntVal(q.value);
+      q.value = n > 0 ? fmtInt.format(n) : '';
+      render();
+    });
+    v.addEventListener('blur', () => {
+      const n = parseNum(v.value);
+      v.value = fmtNum.format(n > 0 ? n : s.valorDefault);
+      render();
+    });
+  });
+
+  ['p-cb','p-trib','p-banqi','p-custo'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('blur', () => {
+      const n = parseNum(el.value);
+      el.value = fmtNum.format(n);
+      render();
+    });
+  });
+
+  document.querySelectorAll('.step-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.dataset.target);
+      if(!target) return;
+      const step = parseFloat(btn.dataset.step) || 0;
+      const next = Math.max(0, parseIntVal(target.value) + step);
+      target.value = next > 0 ? fmtInt.format(next) : '';
+      render();
+    });
+  });
+
+  document.getElementById('btn-reset').addEventListener('click', reset);
+  document.getElementById('btn-print').addEventListener('click', () => window.print());
+
+  loadState();
+  render();
+})();
+</script>
+
+</body>
+</html>
