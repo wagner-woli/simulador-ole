@@ -52,7 +52,7 @@
   .params{display:grid;gap:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px;grid-template-columns:1fr;}
   @media(min-width:680px){.params{grid-template-columns:repeat(2,1fr)}}
   @media(min-width:1100px){.params{grid-template-columns:repeat(3,1fr)}}
-  @media(min-width:1280px){.params{grid-template-columns:repeat(5,1fr)}}
+  @media(min-width:1280px){.params{grid-template-columns:repeat(6,1fr)}}
   .params-title{grid-column:1/-1;font-size:12px;font-weight:700;color:var(--text);letter-spacing:.5px;text-transform:uppercase;margin-bottom:-2px;}
   .param-item{display:flex;flex-direction:column;gap:6px;min-width:0}
   .param-label{font-size:12px;color:var(--text-2);font-weight:700;text-transform:uppercase;letter-spacing:.4px;line-height:1.2;}
@@ -239,6 +239,21 @@
     </div>
 
     <div class="param-item">
+      <label class="param-label" for="cbpay-pct">
+        % CB Pay
+        <span class="param-sub">% sobre Receita Bruta</span>
+      </label>
+      <div class="stepper">
+        <button class="step-btn" type="button" data-step="-1" data-target="cbpay-pct">−</button>
+        <div class="input-wrap">
+          <input class="input" id="cbpay-pct" inputmode="decimal" type="text" value="15,00">
+          <span class="input-suffix">%</span>
+        </div>
+        <button class="step-btn" type="button" data-step="1" data-target="cbpay-pct">+</button>
+      </div>
+    </div>
+
+    <div class="param-item">
       <label class="param-label" for="custos-fixos">
         Custos fixos
         <span class="param-sub">R$ mensais (× 12 no consolidado)</span>
@@ -343,7 +358,7 @@
     { id:4, meses:24, precoDefault:10.40,  contratosDefault:164340, label:'SKU 4', titulo:'24 meses de acesso' },
   ];
 
-  const DEFAULTS = { comExt:0.74, whats:0.04, comInt:2.20, custosFixos:205079, irCsll:34 };
+  const DEFAULTS = { comExt:0.74, whats:0.04, comInt:2.20, cbpay:15.00, custosFixos:205079, irCsll:34 };
   const TRIB = { iss:0.05, pis:0.0165, cofins:0.076 };
   const STORAGE_KEY = 'woli_dre_anual_v2';
 
@@ -441,6 +456,10 @@
           <span class="dre-label" id="comint-lbl-${s.id}">Comissão interna (2,20%)</span>
           <span class="dre-value" id="comint-${s.id}">—</span>
         </div>
+        <div class="dre-row deduct">
+          <span class="dre-label" id="cbpay-lbl-${s.id}">CB Pay (15,00%)</span>
+          <span class="dre-value" id="cbpay-${s.id}">—</span>
+        </div>
         <div class="result">
           <div class="result-row">
             <span class="label">Margem de Contribuição</span>
@@ -467,6 +486,7 @@
     const comExtUnit  = parseNum(document.getElementById('com-ext').value);
     const whatsUnit   = parseNum(document.getElementById('whats').value);
     const comIntPct   = parseNum(document.getElementById('com-int').value);
+    const cbpayPct    = parseNum(document.getElementById('cbpay-pct').value);
     const fixosMensal = parseNum(document.getElementById('custos-fixos').value);
     const fixosAnual  = fixosMensal * 12;
     const irCsllPct   = parseNum(document.getElementById('ir-csll').value);
@@ -490,7 +510,8 @@
       const comExt  = comExtUnit * contratos;
       const whats   = whatsUnit  * contratos;
       const comInt  = rb * (comIntPct / 100);
-      const mc      = rl - comExt - whats - comInt;
+      const cbpay   = rb * (cbpayPct  / 100);
+      const mc      = rl - comExt - whats - comInt - cbpay;
       const mcPct   = rb > 0 ? mc / rb * 100 : 0;
 
       setText(`rb-${s.id}`,       show(rb));
@@ -502,12 +523,14 @@
       setText(`whats-${s.id}`,    show(whats));
       setText(`comint-lbl-${s.id}`, `Comissão interna (${fmtNum.format(comIntPct)}%)`);
       setText(`comint-${s.id}`,   show(comInt));
+      setText(`cbpay-lbl-${s.id}`, `CB Pay (${fmtNum.format(cbpayPct)}%)`);
+      setText(`cbpay-${s.id}`,    show(cbpay));
       setText(`mc-${s.id}`,       blank ? '—' : brl(mc),    { neg: mc < 0 });
       setText(`mcpct-${s.id}`,    blank ? '—' : pct(mcPct), { neg: mcPct < 0 });
 
       totRB   += rb;
       totTrib += iss + pis + cof;
-      totVar  += comExt + whats + comInt;
+      totVar  += comExt + whats + comInt + cbpay;
       totMC   += mc;
       totQtd  += contratos;
 
@@ -607,6 +630,7 @@
           comExt:      document.getElementById('com-ext').value,
           whats:       document.getElementById('whats').value,
           comInt:      document.getElementById('com-int').value,
+          cbpay:       document.getElementById('cbpay-pct').value,
           custosFixos: document.getElementById('custos-fixos').value,
           irCsll:      document.getElementById('ir-csll').value,
         },
@@ -627,6 +651,7 @@
         set('com-ext',      st.params.comExt);
         set('whats',        st.params.whats);
         set('com-int',      st.params.comInt);
+        set('cbpay-pct',    st.params.cbpay);
         set('custos-fixos', st.params.custosFixos);
         set('ir-csll',      st.params.irCsll);
       }
@@ -643,6 +668,7 @@
     document.getElementById('com-ext').value      = fmtNum.format(DEFAULTS.comExt);
     document.getElementById('whats').value        = fmtNum.format(DEFAULTS.whats);
     document.getElementById('com-int').value      = fmtNum.format(DEFAULTS.comInt);
+    document.getElementById('cbpay-pct').value    = fmtNum.format(DEFAULTS.cbpay);
     document.getElementById('custos-fixos').value = fmtNum.format(DEFAULTS.custosFixos);
     document.getElementById('ir-csll').value      = fmtNum.format(DEFAULTS.irCsll);
     SKUS.forEach(s => {
@@ -681,7 +707,7 @@
     q.addEventListener('blur',  () => { const v=parseIntVal(q.value); q.value=v>0?fmtInt.format(v):''; render(); });
   });
 
-  const PARAM_IDS = { 'com-ext':0.74, 'whats':0.04, 'com-int':2.20, 'custos-fixos':205079, 'ir-csll':34 };
+  const PARAM_IDS = { 'com-ext':0.74, 'whats':0.04, 'com-int':2.20, 'cbpay-pct':15, 'custos-fixos':205079, 'ir-csll':34 };
   Object.entries(PARAM_IDS).forEach(([id, def]) => {
     const el = document.getElementById(id);
     el.addEventListener('blur', () => { const v=parseNum(el.value); el.value=fmtNum.format(v>=0?v:def); render(); });
