@@ -196,15 +196,15 @@
     <div class="param-item">
       <label class="param-label" for="com-ext">
         Comissão externa
-        <span class="param-sub">R$ por contrato</span>
+        <span class="param-sub" id="com-ext-sub">% sobre preço médio pond.</span>
       </label>
       <div class="stepper">
-        <button class="step-btn" type="button" data-step="-0.1" data-target="com-ext">−</button>
+        <button class="step-btn" type="button" data-step="-0.5" data-target="com-ext">−</button>
         <div class="input-wrap">
-          <span class="input-prefix">R$</span>
-          <input class="input" id="com-ext" inputmode="decimal" type="text" value="0,74">
+          <input class="input" id="com-ext" inputmode="decimal" type="text" value="5,00">
+          <span class="input-suffix">%</span>
         </div>
-        <button class="step-btn" type="button" data-step="0.1" data-target="com-ext">+</button>
+        <button class="step-btn" type="button" data-step="0.5" data-target="com-ext">+</button>
       </div>
     </div>
 
@@ -358,7 +358,7 @@
     { id:4, meses:24, precoDefault:10.40,  contratosDefault:164340, label:'SKU 4', titulo:'24 meses de acesso' },
   ];
 
-  const DEFAULTS = { comExt:0.74, whats:0.04, comInt:2.20, cbpay:15.00, custosFixos:205079, irCsll:34 };
+  const DEFAULTS = { comExt:5.00, whats:0.04, comInt:2.20, cbpay:15.00, custosFixos:205079, irCsll:34 };
   const TRIB = { iss:0.05, pis:0.0165, cofins:0.076 };
   const STORAGE_KEY = 'woli_dre_anual_v2';
 
@@ -445,7 +445,7 @@
           <span class="dre-value" id="rl-${s.id}">—</span>
         </div>
         <div class="dre-row deduct">
-          <span class="dre-label">Comissão externa (R$/contrato)</span>
+          <span class="dre-label" id="comext-lbl-${s.id}">Comissão externa (5,00%)</span>
           <span class="dre-value" id="comext-${s.id}">—</span>
         </div>
         <div class="dre-row deduct">
@@ -483,8 +483,26 @@
   }
 
   function render(){
-    const comExtUnit  = parseNum(document.getElementById('com-ext').value);
+    const comExtPct   = parseNum(document.getElementById('com-ext').value);
     const whatsUnit   = parseNum(document.getElementById('whats').value);
+
+    // Preço médio ponderado entre os 4 SKUs (preço mensal × contratos)
+    let sumPQ = 0, sumQ = 0;
+    SKUS.forEach(s => {
+      const p = parseNum(document.getElementById(`preco-${s.id}`).value);
+      const q = parseIntVal(document.getElementById(`qtd-${s.id}`).value);
+      sumPQ += p * q;
+      sumQ  += q;
+    });
+    const precoMedioPond  = sumQ > 0 ? sumPQ / sumQ : 0;
+    const comExtUnit      = precoMedioPond * (comExtPct / 100);
+
+    // Atualiza label do parâmetro com o valor calculado
+    const subEl = document.getElementById('com-ext-sub');
+    if(subEl) subEl.textContent = precoMedioPond > 0
+      ? `5% de R$ ${fmtNum.format(precoMedioPond)} = R$ ${fmtNum.format(comExtUnit)}/contrato`
+      : '% sobre preço médio ponderado';
+
     const comIntPct   = parseNum(document.getElementById('com-int').value);
     const cbpayPct    = parseNum(document.getElementById('cbpay-pct').value);
     const fixosMensal = parseNum(document.getElementById('custos-fixos').value);
@@ -519,6 +537,7 @@
       setText(`pis-${s.id}`,      show(pis));
       setText(`cof-${s.id}`,      show(cof));
       setText(`rl-${s.id}`,       show(rl));
+      setText(`comext-lbl-${s.id}`, `Comissão externa (${fmtNum.format(comExtPct)}% s/ preço médio)`);
       setText(`comext-${s.id}`,   show(comExt));
       setText(`whats-${s.id}`,    show(whats));
       setText(`comint-lbl-${s.id}`, `Comissão interna (${fmtNum.format(comIntPct)}%)`);
@@ -665,7 +684,7 @@
   }
 
   function reset(){
-    document.getElementById('com-ext').value      = fmtNum.format(DEFAULTS.comExt);
+    document.getElementById('com-ext').value  = fmtNum.format(DEFAULTS.comExt);
     document.getElementById('whats').value        = fmtNum.format(DEFAULTS.whats);
     document.getElementById('com-int').value      = fmtNum.format(DEFAULTS.comInt);
     document.getElementById('cbpay-pct').value    = fmtNum.format(DEFAULTS.cbpay);
@@ -707,7 +726,7 @@
     q.addEventListener('blur',  () => { const v=parseIntVal(q.value); q.value=v>0?fmtInt.format(v):''; render(); });
   });
 
-  const PARAM_IDS = { 'com-ext':0.74, 'whats':0.04, 'com-int':2.20, 'cbpay-pct':15, 'custos-fixos':205079, 'ir-csll':34 };
+  const PARAM_IDS = { 'com-ext':5.00, 'whats':0.04, 'com-int':2.20, 'cbpay-pct':15, 'custos-fixos':205079, 'ir-csll':34 };
   Object.entries(PARAM_IDS).forEach(([id, def]) => {
     const el = document.getElementById(id);
     el.addEventListener('blur', () => { const v=parseNum(el.value); el.value=fmtNum.format(v>=0?v:def); render(); });
