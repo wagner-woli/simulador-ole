@@ -297,9 +297,9 @@
       <div class="qr-sub" style="font-size:14px;color:var(--text);line-height:1.6;margin-top:4px">Casas Bahia Pay faz a intermediação, Casas Bahia vende e Woli fatura o cliente final. Casas Bahia Pay emite nota fiscal de intermediação para a Woli.</div>
     </div>
     <div class="qr-card highlight">
-      <div class="qr-label">Receita Bruta CB Pay</div>
+      <div class="qr-label">Receita Bruta Casas Bahia Pay</div>
       <div class="qr-value" id="qr-rbcb">R$ 0,00</div>
-      <div class="qr-sub" id="qr-rbcb-sub">0 cursos · take rate 0,00%</div>
+      <div class="qr-sub">Valor total da nota fiscal de intermediação a ser emitida</div>
     </div>
   </section>
 
@@ -488,9 +488,6 @@
 
     setText('qr-rbcb',      brl(totRBCB));
     setText('qr-rlcb',      brl(totRLCB));
-    setText('qr-rbcb-sub',  totQtd > 0
-      ? `${fmtInt.format(totQtd)} cursos · take rate ${fmtNum.format(takeRate)}%`
-      : 'aguardando quantidades · take rate —');
 
     saveState();
   }
