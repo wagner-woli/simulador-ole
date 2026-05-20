@@ -390,6 +390,41 @@
     main{padding:12px}
     .sku{box-shadow:none;break-inside:avoid}
   }
+
+  /* VOLUME + MIX BAR */
+  .volume-bar{
+    display:flex;align-items:stretch;gap:0;flex-wrap:wrap;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);margin-bottom:20px;
+    box-shadow:var(--shadow);overflow:hidden;
+  }
+  .vol-block{
+    display:flex;flex-direction:column;gap:8px;
+    padding:16px 20px;flex:1;min-width:240px;
+  }
+  .vol-block .param-label{margin-bottom:2px}
+  .mix-indicator{
+    padding:16px 20px;display:flex;flex-direction:column;justify-content:center;gap:6px;
+    min-width:180px;border-left:1px solid var(--border);
+  }
+  .mix-indicator.ok{background:var(--accent-soft)}
+  .mix-indicator.warn{background:#fffbeb}
+  .mix-ind-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-2)}
+  .mix-ind-value{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+  .mix-ind-value.ok{color:var(--accent)}
+  .mix-ind-value.warn{color:#d97706}
+  .mix-ind-status{font-size:12px;font-weight:600}
+  .mix-ind-status.ok{color:var(--accent)}
+  .mix-ind-status.warn{color:#d97706}
+
+  /* CONTRATOS CALCULADOS BADGE */
+  .qtd-calc{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--primary-soft);border-radius:8px;padding:8px 12px;
+    font-size:12px;margin-top:6px;
+  }
+  .qtd-calc-label{color:var(--primary-2);font-weight:600}
+  .qtd-calc-value{font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums;font-size:14px}
 </style>
 </head>
 <body>
@@ -430,7 +465,7 @@
       </svg>
     </div>
     <div>
-      <strong>Simule seu cenário:</strong> ajuste o <strong>preço de venda</strong>, a <strong>quantidade vendida</strong> e o <strong>% de intermediação CB Pay</strong> em cada SKU abaixo. A DRE recalcula em tempo real.
+      <strong>Simule seu cenário:</strong> defina a <strong>projeção total de contratos</strong> e o <strong>% do mix</strong> por SKU. Ajuste também o <strong>preço de venda</strong> e o <strong>% de intermediação CB Pay</strong>. A DRE recalcula em tempo real.
     </div>
   </div>
 
@@ -513,6 +548,26 @@
     </div>
   </section>
 
+  <div class="volume-bar">
+    <div class="vol-block">
+      <div class="param-label">Projeção Anual de Contratos</div>
+      <div class="stepper">
+        <button class="step-btn" type="button" data-step="-10000" data-target="proj-total" title="−10.000">−</button>
+        <div class="input-wrap">
+          <span class="input-prefix">#</span>
+          <input class="input" id="proj-total" inputmode="numeric" type="text" value="821.700" aria-label="Projeção anual de contratos" style="min-width:120px">
+        </div>
+        <button class="step-btn" type="button" data-step="10000" data-target="proj-total" title="+10.000">+</button>
+      </div>
+      <span class="param-sub">Total de contratos esperados no ano · distribuídos pelo % de mix</span>
+    </div>
+    <div class="mix-indicator" id="mix-indicator">
+      <div class="mix-ind-label">Soma do mix (4 SKUs)</div>
+      <div class="mix-ind-value" id="mix-ind-value">0,00%</div>
+      <div class="mix-ind-status" id="mix-ind-status">—</div>
+    </div>
+  </div>
+
   <div class="grid" id="grid"></div>
 
   <section class="consolidado" aria-label="Resultado consolidado">
@@ -593,11 +648,12 @@
   'use strict';
 
   const SKUS = [
-    { id:1, meses:1,  precoDefault:19.90, contratosDefault:328680, label:"SKU 1", titulo:"1 mês de acesso" },
-    { id:2, meses:12, precoDefault:12.50, contratosDefault:164340, label:"SKU 2", titulo:"12 meses de acesso" },
-    { id:3, meses:18, precoDefault:12.20, contratosDefault:164340, label:"SKU 3", titulo:"18 meses de acesso" },
-    { id:4, meses:24, precoDefault:10.40, contratosDefault:164340, label:"SKU 4", titulo:"24 meses de acesso" },
+    { id:1, meses:1,  precoDefault:19.90, mixDefault:30.00, label:"SKU 1", titulo:"1 mês de acesso" },
+    { id:2, meses:12, precoDefault:12.50, mixDefault:30.00, label:"SKU 2", titulo:"12 meses de acesso" },
+    { id:3, meses:18, precoDefault:12.20, mixDefault:25.00, label:"SKU 3", titulo:"18 meses de acesso" },
+    { id:4, meses:24, precoDefault:10.40, mixDefault:15.00, label:"SKU 4", titulo:"24 meses de acesso" },
   ];
+  const PROJ_TOTAL_DEFAULT = 821700;
 
   const PARAM_DEFAULTS = {
     comExt: 5.00,
@@ -663,19 +719,18 @@
           </div>
         </div>
         <div class="field">
-          <label class="field-label" for="qtd-${s.id}">Contratos Ano 1</label>
+          <label class="field-label" for="mix-${s.id}">% do mix de vendas</label>
           <div class="stepper">
-            <button class="step-btn" type="button" data-step="-10000" data-target="qtd-${s.id}" aria-label="Diminuir 10 mil unidades" title="−10.000">−</button>
+            <button class="step-btn" type="button" data-step="-5" data-target="mix-${s.id}" aria-label="Diminuir 5 pontos percentuais" title="−5%">−</button>
             <div class="input-wrap">
-              <span class="input-prefix">#</span>
-              <input class="input" id="qtd-${s.id}" inputmode="numeric" type="text" value="${fmtInt.format(s.contratosDefault)}" aria-label="Contratos Ano 1 SKU ${s.id}">
-              <span class="input-edit-icon" aria-hidden="true">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-                </svg>
-              </span>
+              <input class="input" id="mix-${s.id}" inputmode="decimal" type="text" value="${fmtNum.format(s.mixDefault)}" aria-label="% do mix SKU ${s.id}">
+              <span class="input-suffix">%</span>
             </div>
-            <button class="step-btn" type="button" data-step="10000" data-target="qtd-${s.id}" aria-label="Aumentar 10 mil unidades" title="+10.000">+</button>
+            <button class="step-btn" type="button" data-step="5" data-target="mix-${s.id}" aria-label="Aumentar 5 pontos percentuais" title="+5%">+</button>
+          </div>
+          <div class="qtd-calc">
+            <span class="qtd-calc-label">Contratos calculados</span>
+            <span class="qtd-calc-value" id="qtd-val-${s.id}">0</span>
           </div>
         </div>
         <div class="field">
@@ -852,15 +907,28 @@
     let totRB=0, totTrib=0, totVar=0, totCBPay=0, totCredito=0, totMC=0, totQtd=0;
     const rows = [];
 
-    const comExtPct  = parseNum(document.getElementById('com-ext').value);
+    const comExtPct   = parseNum(document.getElementById('com-ext').value);
     const custosFixos = parseNum(document.getElementById('custos-fixos').value) * 12;
-    const irCsllPct  = parseNum(document.getElementById('ir-csll').value);
+    const irCsllPct   = parseNum(document.getElementById('ir-csll').value);
+    const projTotal   = parseInt0(document.getElementById('proj-total').value);
 
-    // Preço médio ponderado (preço mensal × contratos)
+    // Mix validation + indicator
+    let sumMix = 0;
+    SKUS.forEach(s => { sumMix += parseNum(document.getElementById(`mix-${s.id}`).value); });
+    const mixOk = Math.abs(sumMix - 100) < 0.01;
+    const mixInd    = document.getElementById('mix-indicator');
+    const mixValEl  = document.getElementById('mix-ind-value');
+    const mixStatEl = document.getElementById('mix-ind-status');
+    if(mixValEl)  { mixValEl.textContent = fmtNum.format(sumMix) + '%'; mixValEl.className = 'mix-ind-value ' + (mixOk?'ok':'warn'); }
+    if(mixStatEl) { mixStatEl.textContent = mixOk ? '✓ Mix correto — soma = 100%' : `⚠ Ajuste: faltam ${fmtNum.format(100-sumMix)}%`; mixStatEl.className = 'mix-ind-status '+(mixOk?'ok':'warn'); }
+    if(mixInd)    { mixInd.className = 'mix-indicator ' + (mixOk?'ok':'warn'); }
+
+    // Preço médio ponderado (preço mensal × contratos calculados pelo mix)
     let sumPQ = 0, sumQ = 0;
     SKUS.forEach(s => {
       const p = parseNum(document.getElementById(`preco-${s.id}`).value);
-      const q = parseInt0(document.getElementById(`qtd-${s.id}`).value);
+      const mix = parseNum(document.getElementById(`mix-${s.id}`).value);
+      const q = Math.round(projTotal * mix / 100);
       sumPQ += p * q; sumQ += q;
     });
     const precoMedio = sumQ > 0 ? sumPQ / sumQ : 0;
@@ -878,7 +946,10 @@
 
     SKUS.forEach(s => {
       const preco     = parseNum(document.getElementById(`preco-${s.id}`).value);
-      const qtd       = parseInt0(document.getElementById(`qtd-${s.id}`).value);
+      const mix       = parseNum(document.getElementById(`mix-${s.id}`).value);
+      const qtd       = Math.round(projTotal * mix / 100);
+      const qtdEl = document.getElementById(`qtd-val-${s.id}`);
+      if(qtdEl) qtdEl.textContent = fmtInt.format(qtd);
       const cbpayPct  = parseNum(document.getElementById(`cbpay-${s.id}`).value);
       const totalCliente = preco * s.meses;
       setText(`total-cliente-${s.id}`, brl(totalCliente));
@@ -963,10 +1034,11 @@
           comInt:      document.getElementById('com-int').value,
           custosFixos: document.getElementById('custos-fixos').value,
           irCsll:      document.getElementById('ir-csll').value,
+          projTotal:   document.getElementById('proj-total').value,
         },
         skus: SKUS.map(s => ({
           preco: document.getElementById(`preco-${s.id}`).value,
-          qtd:   document.getElementById(`qtd-${s.id}`).value,
+          mix:   document.getElementById(`mix-${s.id}`).value,
           cbpay: document.getElementById(`cbpay-${s.id}`).value,
         })),
       };
@@ -987,12 +1059,13 @@
         setIfStr('com-int',      state.params.comInt);
         setIfStr('custos-fixos', state.params.custosFixos);
         setIfStr('ir-csll',      state.params.irCsll);
+        setIfStr('proj-total',   state.params.projTotal);
       }
       SKUS.forEach((s,i) => {
         const item = state.skus[i];
         if(item){
           if(typeof item.preco === 'string') document.getElementById(`preco-${s.id}`).value = item.preco;
-          if(typeof item.qtd   === 'string') document.getElementById(`qtd-${s.id}`).value   = item.qtd;
+          if(typeof item.mix   === 'string') document.getElementById(`mix-${s.id}`).value   = item.mix;
           if(typeof item.cbpay === 'string') document.getElementById(`cbpay-${s.id}`).value = item.cbpay;
         }
       });
@@ -1005,9 +1078,10 @@
     document.getElementById('com-int').value      = fmtNum.format(PARAM_DEFAULTS.comInt);
     document.getElementById('custos-fixos').value = fmtNum.format(PARAM_DEFAULTS.custosFixos);
     document.getElementById('ir-csll').value      = fmtNum.format(PARAM_DEFAULTS.irCsll);
+    document.getElementById('proj-total').value = fmtInt.format(PROJ_TOTAL_DEFAULT);
     SKUS.forEach(s => {
       document.getElementById(`preco-${s.id}`).value = fmtNum.format(s.precoDefault);
-      document.getElementById(`qtd-${s.id}`).value   = fmtInt.format(s.contratosDefault);
+      document.getElementById(`mix-${s.id}`).value   = fmtNum.format(s.mixDefault);
       document.getElementById(`cbpay-${s.id}`).value = '0,00';
     });
     render();
@@ -1047,13 +1121,17 @@
     inp.addEventListener('input', render);
     inp.addEventListener('focus', () => inp.select());
   });
+  // proj-total blur formatting
+  const projInp = document.getElementById('proj-total');
+  projInp.addEventListener('input', () => formatQtdLive(projInp));
+  projInp.addEventListener('blur', () => { formatQtdOnBlur(projInp); render(); });
+
   SKUS.forEach(s => {
     const p = document.getElementById(`preco-${s.id}`);
-    const q = document.getElementById(`qtd-${s.id}`);
+    const m = document.getElementById(`mix-${s.id}`);
     const c = document.getElementById(`cbpay-${s.id}`);
     p.addEventListener('blur', () => { formatPrecoOnBlur(p, s.precoDefault); render(); });
-    q.addEventListener('input', () => formatQtdLive(q));
-    q.addEventListener('blur', () => { formatQtdOnBlur(q); render(); });
+    m.addEventListener('blur', () => { formatPctOnBlur(m); render(); });
     c.addEventListener('blur', () => { formatPctOnBlur(c); render(); });
   });
   const bindParam = (id, defaultVal) => {
@@ -1077,7 +1155,7 @@
       if(!target) return;
       const step = parseFloat(btn.dataset.step) || 0;
       const decimalTargets = new Set(['com-ext','whats','com-int','custos-fixos','ir-csll']);
-      const isDecimal = btn.dataset.target.startsWith('preco-') || btn.dataset.target.startsWith('cbpay-') || decimalTargets.has(btn.dataset.target);
+      const isDecimal = btn.dataset.target.startsWith('preco-') || btn.dataset.target.startsWith('cbpay-') || btn.dataset.target.startsWith('mix-') || decimalTargets.has(btn.dataset.target);
       if(isDecimal){
         const current = parseNum(target.value);
         const next = Math.max(0, current + step);
