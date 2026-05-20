@@ -234,20 +234,10 @@
     </div>
 
     <div class="cons-row-2">
-      <div class="cons-card highlight-tax">
-        <div class="l">ISS (5,00%)</div>
-        <div class="v" id="c-iss">R$ 0</div>
-        <div class="trib-detail">Imposto Sobre Serviços · base: receita bruta</div>
-      </div>
-      <div class="cons-card highlight-tax">
-        <div class="l">PIS (1,65%) + COFINS (7,60%)</div>
-        <div class="v" id="c-piscofins">R$ 0</div>
-        <div class="trib-detail">Total tributos federais · base: receita bruta</div>
-      </div>
-      <div class="cons-card highlight-result">
-        <div class="l">Resultado Líquido Woli</div>
-        <div class="v" id="c-resultado">R$ 0</div>
-        <div class="s" id="c-resultado-pct">Repasse − ISS − PIS − COFINS</div>
+      <div class="cons-card highlight-tax" style="grid-column:1/-1">
+        <div class="l">Impostos a recolher pela Woli sobre o faturamento — ISS 5% + PIS 1,65% + COFINS 7,60% = 14,25%</div>
+        <div class="v" id="c-trib-total">R$ 0</div>
+        <div class="trib-detail" id="c-trib-detail">ISS: R$ 0 · PIS: R$ 0 · COFINS: R$ 0 · base: receita bruta total</div>
       </div>
     </div>
 
@@ -386,11 +376,9 @@
     const pis       = totTotal * 0.0165;
     const cofins    = totTotal * 0.076;
     const totTrib   = iss + pis + cofins;
-    const resultado = totWoli - totTrib;
 
-    const pctCBshow   = totTotal>0 ? (totCB/totTotal*100)      : 0;
-    const pctWolishow = totTotal>0 ? (totWoli/totTotal*100)     : 0;
-    const pctResshow  = totTotal>0 ? (resultado/totTotal*100)   : 0;
+    const pctCBshow   = totTotal>0 ? (totCB/totTotal*100)   : 0;
+    const pctWolishow = totTotal>0 ? (totWoli/totTotal*100)  : 0;
 
     set('c-qtd',        fmtInt.format(totQtd));
     set('c-total',      fmtBRL.format(totTotal));
@@ -398,14 +386,8 @@
     set('c-cbpay-pct',  `${fmtNum.format(pctCBshow)}% sobre receita total`);
     set('c-woli',       fmtBRL.format(totWoli));
     set('c-woli-pct',   `${fmtNum.format(pctWolishow)}% sobre receita total`);
-    set('c-iss',        fmtBRL.format(iss));
-    set('c-piscofins',  fmtBRL.format(pis + cofins));
-    set('c-resultado',  fmtBRL.format(resultado));
-    set('c-resultado-pct', `${fmtNum.format(pctResshow)}% da receita · tributos: ${fmtBRL.format(totTrib)} (14,25%)`);
-
-    // Color resultado negativo
-    const resEl = document.getElementById('c-resultado');
-    if(resEl) resEl.style.color = resultado < 0 ? '#fca5a5' : '#86efac';
+    set('c-trib-total',  fmtBRL.format(totTrib));
+    set('c-trib-detail', `ISS: ${fmtBRL.format(iss)} · PIS: ${fmtBRL.format(pis)} · COFINS: ${fmtBRL.format(cofins)} · base: receita bruta total`);
   }
 
   // Events
