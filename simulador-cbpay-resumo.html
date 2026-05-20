@@ -138,6 +138,14 @@
   .cons-card.highlight-cbpay{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.35)}
   .cons-card.highlight-woli{background:rgba(10,61,98,.4);border-color:rgba(100,160,220,.35)}
   .cons-card.highlight-woli .v{color:#93c5fd}
+  .cons-card.highlight-tax{background:rgba(0,0,0,.2);border-color:rgba(255,255,255,.2)}
+  .cons-card.highlight-tax .v{color:#fca5a5}
+  .cons-card.highlight-result{background:rgba(21,128,61,.35);border-color:rgba(74,222,128,.4)}
+  .cons-card.highlight-result .v{color:#86efac}
+  .cons-row-2{margin-top:14px;display:grid;gap:14px;grid-template-columns:1fr}
+  @media(min-width:500px){.cons-row-2{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:900px){.cons-row-2{grid-template-columns:repeat(3,1fr)}}
+  .trib-detail{font-size:10px;color:rgba(255,255,255,.55);margin-top:4px;line-height:1.5}
 
   footer{max-width:1100px;margin:0 auto;padding:12px 16px;color:var(--text-3);font-size:11px;text-align:center;border-top:1px solid var(--border)}
 </style>
@@ -219,11 +227,30 @@
         <div class="s" id="c-cbpay-pct">—% sobre receita total</div>
       </div>
       <div class="cons-card highlight-woli">
-        <div class="l">Repasse à Woli</div>
+        <div class="l">Repasse à Woli (bruto)</div>
         <div class="v" id="c-woli">R$ 0</div>
         <div class="s" id="c-woli-pct">—% sobre receita total</div>
       </div>
     </div>
+
+    <div class="cons-row-2">
+      <div class="cons-card highlight-tax">
+        <div class="l">ISS (5,00%)</div>
+        <div class="v" id="c-iss">R$ 0</div>
+        <div class="trib-detail">Imposto Sobre Serviços · base: receita bruta</div>
+      </div>
+      <div class="cons-card highlight-tax">
+        <div class="l">PIS (1,65%) + COFINS (7,60%)</div>
+        <div class="v" id="c-piscofins">R$ 0</div>
+        <div class="trib-detail">Total tributos federais · base: receita bruta</div>
+      </div>
+      <div class="cons-card highlight-result">
+        <div class="l">Resultado Líquido Woli</div>
+        <div class="v" id="c-resultado">R$ 0</div>
+        <div class="s" id="c-resultado-pct">Repasse − ISS − PIS − COFINS</div>
+      </div>
+    </div>
+
   </section>
 
 </main>
@@ -355,15 +382,30 @@
       totWoli  += woliVal;
     });
 
-    const pctCBshow   = totTotal>0 ? (totCB/totTotal*100)  : 0;
-    const pctWolishow = totTotal>0 ? (totWoli/totTotal*100) : 0;
+    const iss       = totTotal * 0.05;
+    const pis       = totTotal * 0.0165;
+    const cofins    = totTotal * 0.076;
+    const totTrib   = iss + pis + cofins;
+    const resultado = totWoli - totTrib;
 
-    set('c-qtd',      fmtInt.format(totQtd));
-    set('c-total',    fmtBRL.format(totTotal));
-    set('c-cbpay',    fmtBRL.format(totCB));
-    set('c-cbpay-pct',`${fmtNum.format(pctCBshow)}% sobre receita total`);
-    set('c-woli',     fmtBRL.format(totWoli));
-    set('c-woli-pct', `${fmtNum.format(pctWolishow)}% sobre receita total`);
+    const pctCBshow   = totTotal>0 ? (totCB/totTotal*100)      : 0;
+    const pctWolishow = totTotal>0 ? (totWoli/totTotal*100)     : 0;
+    const pctResshow  = totTotal>0 ? (resultado/totTotal*100)   : 0;
+
+    set('c-qtd',        fmtInt.format(totQtd));
+    set('c-total',      fmtBRL.format(totTotal));
+    set('c-cbpay',      fmtBRL.format(totCB));
+    set('c-cbpay-pct',  `${fmtNum.format(pctCBshow)}% sobre receita total`);
+    set('c-woli',       fmtBRL.format(totWoli));
+    set('c-woli-pct',   `${fmtNum.format(pctWolishow)}% sobre receita total`);
+    set('c-iss',        fmtBRL.format(iss));
+    set('c-piscofins',  fmtBRL.format(pis + cofins));
+    set('c-resultado',  fmtBRL.format(resultado));
+    set('c-resultado-pct', `${fmtNum.format(pctResshow)}% da receita · tributos: ${fmtBRL.format(totTrib)} (14,25%)`);
+
+    // Color resultado negativo
+    const resEl = document.getElementById('c-resultado');
+    if(resEl) resEl.style.color = resultado < 0 ? '#fca5a5' : '#86efac';
   }
 
   // Events
