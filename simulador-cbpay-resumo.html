@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador CB Pay — Visão da Intermediação</title>
+<style>
+  :root{
+    --bg:#f4f6fa;
+    --card:#fff;
+    --primary:#b91c1c;
+    --primary-2:#7f1d1d;
+    --primary-soft:#fee2e2;
+    --blue:#0a3d62;
+    --blue-soft:#e8eef5;
+    --accent:#15803d;
+    --accent-soft:#dcfce7;
+    --text:#0f172a;
+    --text-2:#475569;
+    --text-3:#94a3b8;
+    --border:#e2e8f0;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px rgba(15,23,42,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+  .header{background:linear-gradient(135deg,var(--primary-2),var(--primary));color:#fff;padding:22px 20px}
+  .header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-mark{width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;border:1px solid rgba(255,255,255,.25)}
+  .brand-name{font-size:18px;font-weight:700}
+  .brand-sub{font-size:12px;color:rgba(255,255,255,.75);letter-spacing:.4px;text-transform:uppercase}
+  h1{margin:0;font-size:19px;font-weight:600;line-height:1.3}
+  .subtitle{color:rgba(255,255,255,.75);font-size:13px;margin-top:2px}
+
+  main{max-width:1100px;margin:0 auto;padding:24px 16px 40px}
+
+  /* PARAM BAR */
+  .param-bar{
+    display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;
+    box-shadow:var(--shadow);
+  }
+  .param-bar-label{font-size:13px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+  .stepper{display:flex;gap:6px;align-items:stretch}
+  .stepper .input-wrap{display:flex;align-items:stretch;background:#fff;border:1.5px solid #b6c5db;border-radius:8px;transition:border-color .15s,box-shadow .15s}
+  .stepper .input-wrap:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(185,28,28,.12)}
+  .input-suffix{display:flex;align-items:center;padding:0 12px;color:var(--text-2);font-size:14px;font-weight:600;border-left:1px solid var(--border);background:#f8fafc;border-radius:0 6px 6px 0}
+  .input{flex:1;border:0;background:transparent;outline:none;padding:0 12px;font-size:16px;color:var(--text);min-height:44px;width:90px;font-variant-numeric:tabular-nums;text-align:right}
+  .step-btn{flex-shrink:0;width:40px;min-height:44px;background:#fff;color:var(--primary);border:1.5px solid #b6c5db;border-radius:8px;font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s,border-color .12s;user-select:none}
+  .step-btn:hover{background:var(--primary-soft);border-color:var(--primary)}
+  .param-hint{font-size:12px;color:var(--text-3);flex:1}
+
+  /* SKU GRID */
+  .sku-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:24px}
+  @media(min-width:640px){.sku-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:1000px){.sku-grid{grid-template-columns:repeat(4,1fr)}}
+
+  .sku-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+  .sku-head{padding:14px 16px 10px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#f8fafc,#fff)}
+  .sku-tag{display:inline-block;background:var(--primary-soft);color:var(--primary-2);font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:3px 8px;border-radius:6px}
+  .sku-title{font-size:16px;font-weight:600;margin:6px 0 2px}
+  .sku-sub{font-size:12px;color:var(--text-2)}
+
+  .sku-inputs{padding:12px 16px;border-bottom:1px solid var(--border);background:#fafafa;display:flex;flex-direction:column;gap:10px}
+  .field-label{display:block;font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+  .input-prefix{display:flex;align-items:center;padding:0 10px;color:var(--text-2);font-size:14px;font-weight:600;border-right:1px solid var(--border);background:#f8fafc;border-radius:6px 0 0 6px}
+
+  /* HERO PRICE */
+  .price-hero{background:linear-gradient(135deg,var(--primary-2),var(--primary));color:#fff;padding:14px 16px;position:relative;overflow:hidden}
+  .price-hero::after{content:"";position:absolute;right:-20px;top:-20px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.06)}
+  .ph-label{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.8);font-weight:700}
+  .ph-value{font-size:26px;font-weight:800;line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums;position:relative;z-index:1}
+  .ph-sub{font-size:11px;color:rgba(255,255,255,.75);margin-top:3px;position:relative;z-index:1}
+
+  /* SPLIT */
+  .split{padding:12px 16px 16px;flex:1;display:flex;flex-direction:column;gap:8px}
+  .split-row{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:8px;font-size:13px}
+  .split-row.cbpay{background:var(--primary-soft)}
+  .split-row.woli{background:var(--blue-soft)}
+  .split-label{font-weight:600;color:var(--text-2)}
+  .split-row.cbpay .split-label{color:var(--primary-2)}
+  .split-row.woli  .split-label{color:var(--blue)}
+  .split-value{font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
+  .split-row.cbpay .split-value{color:var(--primary)}
+  .split-row.woli  .split-value{color:var(--blue)}
+  .split-total{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid var(--border);margin-top:4px;font-size:12px;color:var(--text-3)}
+  .split-total span:last-child{font-weight:600;color:var(--text-2);font-variant-numeric:tabular-nums}
+
+  /* CONSOLIDADO */
+  .consolidado{background:linear-gradient(135deg,var(--primary-2),var(--primary));color:#fff;border-radius:var(--radius);padding:22px 20px;box-shadow:0 4px 20px rgba(127,29,29,.25);margin-bottom:8px}
+  .cons-title{font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:600;margin-bottom:16px}
+  .cons-grid{display:grid;gap:14px;grid-template-columns:1fr}
+  @media(min-width:500px){.cons-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:900px){.cons-grid{grid-template-columns:repeat(4,1fr)}}
+  .cons-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:14px 16px}
+  .cons-card .l{font-size:11px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+  .cons-card .v{font-size:22px;font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .cons-card .s{font-size:11px;color:rgba(255,255,255,.65);margin-top:4px}
+  .cons-card.highlight-cbpay{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.35)}
+  .cons-card.highlight-woli{background:rgba(10,61,98,.4);border-color:rgba(100,160,220,.35)}
+  .cons-card.highlight-woli .v{color:#93c5fd}
+
+  footer{max-width:1100px;margin:0 auto;padding:12px 16px;color:var(--text-3);font-size:11px;text-align:center;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark">CB</div>
+      <div>
+        <div class="brand-sub">Casas Bahia Pay</div>
+        <div class="brand-name">Simulador de Intermediação</div>
+      </div>
+    </div>
+    <div>
+      <h1>Curso Online ODS — Receita de Intermediação</h1>
+      <div class="subtitle">4 SKUs · % único de intermediação · resultados consolidados</div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="param-bar">
+    <span class="param-bar-label">% Intermediação CB Pay</span>
+    <div class="stepper">
+      <button class="step-btn" type="button" data-step="-1" data-target="pct-cb" title="−1%">−</button>
+      <div class="input-wrap">
+        <input class="input" id="pct-cb" type="text" inputmode="decimal" value="15,00" style="width:70px">
+        <span class="input-suffix">%</span>
+      </div>
+      <button class="step-btn" type="button" data-step="1" data-target="pct-cb" title="+1%">+</button>
+    </div>
+    <span class="param-hint">Percentual aplicado sobre a receita bruta de cada SKU · válido para todos os SKUs</span>
+  </div>
+
+  <div class="sku-grid" id="grid"></div>
+
+  <section class="consolidado">
+    <div class="cons-title">Resultado Consolidado · Operação CB Pay × Woli</div>
+    <div class="cons-grid">
+      <div class="cons-card">
+        <div class="l">Contratos Vendidos</div>
+        <div class="v" id="c-qtd">0</div>
+        <div class="s" id="c-qtd-sub">total dos 4 SKUs</div>
+      </div>
+      <div class="cons-card">
+        <div class="l">Receita Total (clientes)</div>
+        <div class="v" id="c-total">R$ 0</div>
+        <div class="s">valor bruto faturado pela Woli</div>
+      </div>
+      <div class="cons-card highlight-cbpay">
+        <div class="l">Receita CB Pay</div>
+        <div class="v" id="c-cbpay">R$ 0</div>
+        <div class="s" id="c-cbpay-pct">—% sobre receita total</div>
+      </div>
+      <div class="cons-card highlight-woli">
+        <div class="l">Repasse à Woli</div>
+        <div class="v" id="c-woli">R$ 0</div>
+        <div class="s" id="c-woli-pct">—% sobre receita total</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Documento confidencial · uso restrito Casas Bahia Pay / Woli</footer>
+
+<script>
+(() => {
+  'use strict';
+
+  const SKUS = [
+    { id:1, label:'SKU 1', titulo:'1 mês de acesso',   meses:1,  precoDefault:19.90, qtdDefault:328680 },
+    { id:2, label:'SKU 2', titulo:'12 meses de acesso', meses:12, precoDefault:12.50, qtdDefault:164340 },
+    { id:3, label:'SKU 3', titulo:'18 meses de acesso', meses:18, precoDefault:12.20, qtdDefault:164340 },
+    { id:4, label:'SKU 4', titulo:'24 meses de acesso', meses:24, precoDefault:10.40, qtdDefault:164340 },
+  ];
+
+  const fmtBRL = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+  const fmtBRL2= new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtNum = new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtInt = new Intl.NumberFormat('pt-BR');
+
+  function parseNum(s){ const n=parseFloat(String(s).trim().replace(/\./g,'').replace(',','.')); return isFinite(n)&&n>=0?n:0; }
+  function parseQtd(s){ const n=parseInt(String(s).replace(/\D/g,''),10); return isFinite(n)&&n>=0?n:0; }
+
+  // Build SKU cards
+  const grid = document.getElementById('grid');
+  SKUS.forEach(s => {
+    const el = document.createElement('article');
+    el.className = 'sku-card';
+    el.innerHTML = `
+      <div class="sku-head">
+        <span class="sku-tag">${s.label}</span>
+        <div class="sku-title">${s.titulo}</div>
+        <div class="sku-sub">${s.meses} ${s.meses===1?'mês':'meses'} de acesso à plataforma</div>
+      </div>
+      <div class="sku-inputs">
+        <div>
+          <label class="field-label" for="preco-${s.id}">Preço mensal ao cliente</label>
+          <div class="stepper">
+            <button class="step-btn" type="button" data-step="-1" data-target="preco-${s.id}">−</button>
+            <div class="input-wrap">
+              <span class="input-prefix">R$</span>
+              <input class="input" id="preco-${s.id}" inputmode="decimal" type="text" value="${fmtNum.format(s.precoDefault)}" style="width:80px">
+            </div>
+            <button class="step-btn" type="button" data-step="1" data-target="preco-${s.id}">+</button>
+          </div>
+        </div>
+        <div>
+          <label class="field-label" for="qtd-${s.id}">Contratos Ano 1</label>
+          <div class="stepper">
+            <button class="step-btn" type="button" data-step="-10000" data-target="qtd-${s.id}">−</button>
+            <div class="input-wrap">
+              <span class="input-prefix">#</span>
+              <input class="input" id="qtd-${s.id}" inputmode="numeric" type="text" value="${fmtInt.format(s.qtdDefault)}" style="width:100px">
+            </div>
+            <button class="step-btn" type="button" data-step="10000" data-target="qtd-${s.id}">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="price-hero">
+        <div class="ph-label">Preço total do kit ao cliente</div>
+        <div class="ph-value" id="total-kit-${s.id}">—</div>
+        <div class="ph-sub" id="total-kit-sub-${s.id}">R$ ${fmtNum.format(s.precoDefault)}/mês × ${s.meses} ${s.meses===1?'mês':'meses'}</div>
+      </div>
+      <div class="split">
+        <div class="split-row cbpay">
+          <span class="split-label">CB Pay (intermediação)</span>
+          <span class="split-value" id="val-cbpay-${s.id}">—</span>
+        </div>
+        <div class="split-row woli">
+          <span class="split-label">Repasse à Woli</span>
+          <span class="split-value" id="val-woli-${s.id}">—</span>
+        </div>
+        <div class="split-total">
+          <span>Receita total dos contratos</span>
+          <span id="val-total-${s.id}">—</span>
+        </div>
+      </div>`;
+    grid.appendChild(el);
+  });
+
+  function set(id, v){ const el=document.getElementById(id); if(el) el.textContent=v; }
+
+  function render(){
+    const pctCB = parseNum(document.getElementById('pct-cb').value) / 100;
+    let totQtd=0, totTotal=0, totCB=0, totWoli=0;
+
+    SKUS.forEach(s => {
+      const preco = parseNum(document.getElementById(`preco-${s.id}`).value);
+      const qtd   = parseQtd(document.getElementById(`qtd-${s.id}`).value);
+      const precoKit  = preco * s.meses;
+      const receita   = precoKit * qtd;
+      const cbpayVal  = receita * pctCB;
+      const woliVal   = receita - cbpayVal;
+
+      set(`total-kit-${s.id}`,     fmtBRL2.format(precoKit));
+      set(`total-kit-sub-${s.id}`, `R$ ${fmtNum.format(preco)}/mês × ${s.meses} ${s.meses===1?'mês':'meses'}`);
+      set(`val-cbpay-${s.id}`,  qtd>0 ? fmtBRL.format(cbpayVal) : '—');
+      set(`val-woli-${s.id}`,   qtd>0 ? fmtBRL.format(woliVal)  : '—');
+      set(`val-total-${s.id}`,  qtd>0 ? fmtBRL.format(receita)  : '—');
+
+      totQtd   += qtd;
+      totTotal += receita;
+      totCB    += cbpayVal;
+      totWoli  += woliVal;
+    });
+
+    const pctCBshow   = totTotal>0 ? (totCB/totTotal*100)  : 0;
+    const pctWolishow = totTotal>0 ? (totWoli/totTotal*100) : 0;
+
+    set('c-qtd',      fmtInt.format(totQtd));
+    set('c-total',    fmtBRL.format(totTotal));
+    set('c-cbpay',    fmtBRL.format(totCB));
+    set('c-cbpay-pct',`${fmtNum.format(pctCBshow)}% sobre receita total`);
+    set('c-woli',     fmtBRL.format(totWoli));
+    set('c-woli-pct', `${fmtNum.format(pctWolishow)}% sobre receita total`);
+  }
+
+  // Input events
+  document.querySelectorAll('.input').forEach(inp => {
+    inp.addEventListener('input', render);
+    inp.addEventListener('focus', () => inp.select());
+    inp.addEventListener('blur', () => {
+      const isQtd = inp.id.startsWith('qtd-');
+      if(isQtd){
+        const v = parseQtd(inp.value);
+        inp.value = v > 0 ? fmtInt.format(v) : '';
+      } else {
+        const v = parseNum(inp.value);
+        inp.value = fmtNum.format(v > 0 ? v : 0);
+      }
+      render();
+    });
+  });
+
+  // Stepper buttons
+  document.querySelectorAll('.step-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const inp = document.getElementById(btn.dataset.target);
+      if(!inp) return;
+      const step = parseFloat(btn.dataset.step) || 0;
+      const isQtd = inp.id.startsWith('qtd-');
+      if(isQtd){
+        const next = Math.max(0, parseQtd(inp.value) + step);
+        inp.value = next > 0 ? fmtInt.format(next) : '';
+      } else {
+        const next = Math.max(0, parseNum(inp.value) + step);
+        inp.value = fmtNum.format(next);
+      }
+      render();
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
