@@ -561,6 +561,18 @@
       </div>
       <span class="param-sub">Total de contratos esperados no ano · distribuídos pelo % de mix</span>
     </div>
+    <div class="vol-block" style="border-left:1px solid var(--border)">
+      <div class="param-label">% Intermediação CB Pay</div>
+      <div class="stepper">
+        <button class="step-btn" type="button" data-step="-1" data-target="pct-cbpay" title="−1%">−</button>
+        <div class="input-wrap">
+          <input class="input" id="pct-cbpay" inputmode="decimal" type="text" value="80,00" aria-label="% intermediação CB Pay">
+          <span class="input-suffix">%</span>
+        </div>
+        <button class="step-btn" type="button" data-step="1" data-target="pct-cbpay" title="+1%">+</button>
+      </div>
+      <span class="param-sub">% sobre a receita bruta · aplicado a todos os SKUs</span>
+    </div>
     <div class="mix-indicator" id="mix-indicator">
       <div class="mix-ind-label">Soma do mix (4 SKUs)</div>
       <div class="mix-ind-value" id="mix-ind-value">0,00%</div>
@@ -733,17 +745,6 @@
             <span class="qtd-calc-value" id="qtd-val-${s.id}">0</span>
           </div>
         </div>
-        <div class="field">
-          <label class="field-label" for="cbpay-${s.id}">% Intermediação CB Pay Educação</label>
-          <div class="stepper">
-            <button class="step-btn" type="button" data-step="-1" data-target="cbpay-${s.id}" aria-label="Diminuir 1 ponto percentual" title="−1,00%">−</button>
-            <div class="input-wrap">
-              <input class="input" id="cbpay-${s.id}" inputmode="decimal" type="text" value="0,00" aria-label="% Intermediação CB Pay SKU ${s.id}" title="Clique para editar o % de intermediação CB Pay">
-              <span class="input-suffix">%</span>
-            </div>
-            <button class="step-btn" type="button" data-step="1" data-target="cbpay-${s.id}" aria-label="Aumentar 1 ponto percentual" title="+1,00%">+</button>
-          </div>
-        </div>
       </div>
       <div class="price-hero">
         <div class="ph-label">Preço total ao cliente</div>
@@ -911,6 +912,7 @@
     const custosFixos = parseNum(document.getElementById('custos-fixos').value) * 12;
     const irCsllPct   = parseNum(document.getElementById('ir-csll').value);
     const projTotal   = parseInt0(document.getElementById('proj-total').value);
+    const cbpayGlobal = parseNum(document.getElementById('pct-cbpay').value);
 
     // Mix validation + indicator
     let sumMix = 0;
@@ -950,7 +952,7 @@
       const qtd       = Math.round(projTotal * mix / 100);
       const qtdEl = document.getElementById(`qtd-val-${s.id}`);
       if(qtdEl) qtdEl.textContent = fmtInt.format(qtd);
-      const cbpayPct  = parseNum(document.getElementById(`cbpay-${s.id}`).value);
+      const cbpayPct  = cbpayGlobal;
       const totalCliente = preco * s.meses;
       setText(`total-cliente-${s.id}`, brl(totalCliente));
       setText(`total-cliente-sub-${s.id}`, `R$ ${fmtNum.format(preco || 0)}/mês × ${s.meses} ${s.meses === 1 ? 'mês' : 'meses'}`);
@@ -1035,11 +1037,11 @@
           custosFixos: document.getElementById('custos-fixos').value,
           irCsll:      document.getElementById('ir-csll').value,
           projTotal:   document.getElementById('proj-total').value,
+          pctCbpay:    document.getElementById('pct-cbpay').value,
         },
         skus: SKUS.map(s => ({
           preco: document.getElementById(`preco-${s.id}`).value,
           mix:   document.getElementById(`mix-${s.id}`).value,
-          cbpay: document.getElementById(`cbpay-${s.id}`).value,
         })),
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -1060,13 +1062,13 @@
         setIfStr('custos-fixos', state.params.custosFixos);
         setIfStr('ir-csll',      state.params.irCsll);
         setIfStr('proj-total',   state.params.projTotal);
+        setIfStr('pct-cbpay',    state.params.pctCbpay);
       }
       SKUS.forEach((s,i) => {
         const item = state.skus[i];
         if(item){
           if(typeof item.preco === 'string') document.getElementById(`preco-${s.id}`).value = item.preco;
           if(typeof item.mix   === 'string') document.getElementById(`mix-${s.id}`).value   = item.mix;
-          if(typeof item.cbpay === 'string') document.getElementById(`cbpay-${s.id}`).value = item.cbpay;
         }
       });
     }catch(e){ /* corrupto, ignora */ }
@@ -1079,10 +1081,10 @@
     document.getElementById('custos-fixos').value = fmtNum.format(PARAM_DEFAULTS.custosFixos);
     document.getElementById('ir-csll').value      = fmtNum.format(PARAM_DEFAULTS.irCsll);
     document.getElementById('proj-total').value = fmtInt.format(PROJ_TOTAL_DEFAULT);
+    document.getElementById('pct-cbpay').value  = '80,00';
     SKUS.forEach(s => {
       document.getElementById(`preco-${s.id}`).value = fmtNum.format(s.precoDefault);
       document.getElementById(`mix-${s.id}`).value   = fmtNum.format(s.mixDefault);
-      document.getElementById(`cbpay-${s.id}`).value = '0,00';
     });
     render();
   }
@@ -1126,13 +1128,15 @@
   projInp.addEventListener('input', () => formatQtdLive(projInp));
   projInp.addEventListener('blur', () => { formatQtdOnBlur(projInp); render(); });
 
+  // pct-cbpay blur
+  const cbpayGlInp = document.getElementById('pct-cbpay');
+  cbpayGlInp.addEventListener('blur', () => { formatPctOnBlur(cbpayGlInp); render(); });
+
   SKUS.forEach(s => {
     const p = document.getElementById(`preco-${s.id}`);
     const m = document.getElementById(`mix-${s.id}`);
-    const c = document.getElementById(`cbpay-${s.id}`);
     p.addEventListener('blur', () => { formatPrecoOnBlur(p, s.precoDefault); render(); });
     m.addEventListener('blur', () => { formatPctOnBlur(m); render(); });
-    c.addEventListener('blur', () => { formatPctOnBlur(c); render(); });
   });
   const bindParam = (id, defaultVal) => {
     const el = document.getElementById(id);
@@ -1155,7 +1159,7 @@
       if(!target) return;
       const step = parseFloat(btn.dataset.step) || 0;
       const decimalTargets = new Set(['com-ext','whats','com-int','custos-fixos','ir-csll']);
-      const isDecimal = btn.dataset.target.startsWith('preco-') || btn.dataset.target.startsWith('cbpay-') || btn.dataset.target.startsWith('mix-') || decimalTargets.has(btn.dataset.target);
+      const isDecimal = btn.dataset.target.startsWith('preco-') || btn.dataset.target.startsWith('mix-') || btn.dataset.target === 'pct-cbpay' || decimalTargets.has(btn.dataset.target);
       if(isDecimal){
         const current = parseNum(target.value);
         const next = Math.max(0, current + step);
