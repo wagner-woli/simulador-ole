@@ -148,9 +148,66 @@
   .trib-detail{font-size:10px;color:rgba(255,255,255,.55);margin-top:4px;line-height:1.5}
 
   footer{max-width:1100px;margin:0 auto;padding:12px 16px;color:var(--text-3);font-size:11px;text-align:center;border-top:1px solid var(--border)}
+
+  /* PASSWORD GATE */
+  #pw-gate{
+    position:fixed;inset:0;z-index:9999;
+    background:linear-gradient(135deg,var(--primary-2),var(--primary));
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
+  }
+  #pw-gate.hidden{display:none}
+  .pw-box{
+    background:#fff;border-radius:20px;padding:40px 36px;
+    max-width:400px;width:100%;text-align:center;
+    box-shadow:0 24px 64px rgba(0,0,0,.3);
+  }
+  .pw-mark{
+    width:64px;height:64px;border-radius:16px;
+    background:linear-gradient(135deg,var(--primary-2),var(--primary));
+    color:#fff;font-size:22px;font-weight:900;
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 20px;
+  }
+  .pw-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px}
+  .pw-sub{font-size:13px;color:var(--text-2);margin-bottom:28px;line-height:1.5}
+  .pw-field{
+    width:100%;padding:13px 16px;font-size:16px;
+    border:2px solid var(--border);border-radius:10px;
+    outline:none;text-align:center;letter-spacing:.15em;
+    color:var(--text);transition:border-color .15s,box-shadow .15s;
+    font-family:inherit;
+  }
+  .pw-field:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(185,28,28,.12)}
+  .pw-field.shake{animation:shake .35s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+  .pw-error{
+    font-size:12px;color:var(--primary);font-weight:600;
+    margin-top:10px;min-height:18px;
+  }
+  .pw-btn{
+    width:100%;margin-top:20px;padding:14px;
+    background:linear-gradient(135deg,var(--primary-2),var(--primary));
+    color:#fff;font-size:15px;font-weight:700;border:none;
+    border-radius:10px;cursor:pointer;transition:opacity .15s;font-family:inherit;
+  }
+  .pw-btn:hover{opacity:.9}
+  .pw-footer{font-size:11px;color:var(--text-3);margin-top:22px}
 </style>
 </head>
 <body>
+
+<div id="pw-gate">
+  <div class="pw-box">
+    <div class="pw-mark">CB</div>
+    <div class="pw-title">Acesso Restrito</div>
+    <div class="pw-sub">Simulador de Intermediação CB Pay × Woli<br>Digite a senha para continuar</div>
+    <input id="pw-input" class="pw-field" type="password" placeholder="••••••••" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="pw-error" id="pw-error"></div>
+    <button class="pw-btn" id="pw-btn" type="button">Entrar</button>
+    <div class="pw-footer">Documento confidencial · uso restrito</div>
+  </div>
+</div>
 
 <header class="header">
   <div class="header-inner">
@@ -246,6 +303,35 @@
 </main>
 
 <footer>Documento confidencial · uso restrito Casas Bahia Pay / Woli</footer>
+
+<script>
+(() => {
+  const PASS = 'cbpay2026';
+  const SK   = 'cbpay_unlocked';
+  const gate  = document.getElementById('pw-gate');
+  const inp   = document.getElementById('pw-input');
+  const errEl = document.getElementById('pw-error');
+
+  if(sessionStorage.getItem(SK) === '1') { gate.classList.add('hidden'); }
+
+  function tryUnlock(){
+    if(inp.value === PASS){
+      sessionStorage.setItem(SK,'1');
+      gate.classList.add('hidden');
+    } else {
+      errEl.textContent = 'Senha incorreta. Tente novamente.';
+      inp.classList.remove('shake');
+      void inp.offsetWidth;
+      inp.classList.add('shake');
+      inp.value = '';
+      inp.focus();
+    }
+  }
+
+  document.getElementById('pw-btn').addEventListener('click', tryUnlock);
+  inp.addEventListener('keydown', e => { if(e.key==='Enter') tryUnlock(); });
+})();
+</script>
 
 <script>
 (() => {
