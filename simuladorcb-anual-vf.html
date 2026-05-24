@@ -566,7 +566,7 @@
       <div class="stepper">
         <button class="step-btn" type="button" data-step="-1" data-target="pct-cbpay" title="−1%">−</button>
         <div class="input-wrap">
-          <input class="input" id="pct-cbpay" inputmode="decimal" type="text" value="80,00" aria-label="% intermediação CB Pay">
+          <input class="input" id="pct-cbpay" inputmode="decimal" type="text" value="85,00" aria-label="% intermediação CB Pay">
           <span class="input-suffix">%</span>
         </div>
         <button class="step-btn" type="button" data-step="1" data-target="pct-cbpay" title="+1%">+</button>
@@ -1081,7 +1081,7 @@
     document.getElementById('custos-fixos').value = fmtNum.format(PARAM_DEFAULTS.custosFixos);
     document.getElementById('ir-csll').value      = fmtNum.format(PARAM_DEFAULTS.irCsll);
     document.getElementById('proj-total').value = fmtInt.format(PROJ_TOTAL_DEFAULT);
-    document.getElementById('pct-cbpay').value  = '80,00';
+    document.getElementById('pct-cbpay').value  = '85,00';
     SKUS.forEach(s => {
       document.getElementById(`preco-${s.id}`).value = fmtNum.format(s.precoDefault);
       document.getElementById(`mix-${s.id}`).value   = fmtNum.format(s.mixDefault);
