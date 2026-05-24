@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRE Pro-forma 2025 — Woli + Projeto CB Pay</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#0a3d62; --primary-2:#062a44; --primary-soft:#e8eef5;
+  --cb:#b91c1c; --cb-2:#7f1d1d; --cb-soft:#fee2e2;
+  --pf:#15803d; --pf-soft:#dcfce7;
+  --accent:#15803d; --negative:#b91c1c; --warn:#d97706;
+  --text:#0f172a; --text-2:#475569; --text-3:#94a3b8;
+  --border:#e2e8f0; --radius:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f1f5f9;color:var(--text);min-height:100vh}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-2) 100%);padding:32px 24px 28px;text-align:center;color:#fff}
+.header h1{font-size:clamp(1.2rem,2.5vw,1.75rem);font-weight:800;letter-spacing:-0.02em;line-height:1.2}
+.header p{margin-top:8px;font-size:0.85rem;opacity:0.75;font-weight:400}
+
+.container{max-width:1180px;margin:0 auto;padding:24px 16px 48px}
+
+/* CARDS */
+.card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.card-title{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2);margin-bottom:14px}
+
+/* PARAM BAR */
+.param-bar{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end}
+.param-group{display:flex;flex-direction:column;gap:4px}
+.param-group label{font-size:0.75rem;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:.04em}
+.param-group .input-wrap{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;background:#fff}
+.param-group .input-wrap:focus-within{border-color:var(--primary)}
+.param-group .prefix,.param-group .suffix{padding:0 10px;background:#f8fafc;font-size:0.82rem;color:var(--text-2);border:none;white-space:nowrap;height:38px;display:flex;align-items:center}
+.param-group .prefix{border-right:1px solid var(--border)}
+.param-group .suffix{border-left:1px solid var(--border)}
+.param-group input.input{border:none;outline:none;padding:0 10px;font-size:0.92rem;font-weight:600;color:var(--text);height:38px;width:90px;font-family:inherit;text-align:right}
+.param-group input.input.wide{width:120px}
+.mix-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:0.78rem;font-weight:700}
+.mix-badge.ok{background:#dcfce7;color:#15803d}
+.mix-badge.warn{background:#fef3c7;color:var(--warn)}
+
+/* SKU GRID */
+.sku-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:700px){.sku-grid{grid-template-columns:repeat(2,1fr)}}
+.sku-card{background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:8px}
+.sku-card-head{display:flex;justify-content:space-between;align-items:center}
+.sku-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--primary)}
+.sku-title{font-size:0.72rem;color:var(--text-2)}
+.sku-field{display:flex;flex-direction:column;gap:3px}
+.sku-field label{font-size:0.68rem;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.stepper{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:7px;overflow:hidden;background:#fff}
+.step-btn{width:28px;height:30px;border:none;background:none;cursor:pointer;font-size:1rem;color:var(--text-2);display:flex;align-items:center;justify-content:center;transition:background .15s}
+.step-btn:hover{background:var(--primary-soft);color:var(--primary)}
+.stepper input.input{border:none;outline:none;text-align:center;font-size:0.88rem;font-weight:600;color:var(--text);height:30px;width:60px;font-family:inherit}
+.sku-qtd{display:inline-block;padding:2px 8px;background:var(--primary-soft);color:var(--primary);border-radius:999px;font-size:0.72rem;font-weight:700;text-align:center}
+
+/* DRE TABLE */
+.table-wrap{overflow-x:auto}
+table.dre{width:100%;border-collapse:collapse;font-size:0.875rem}
+table.dre th{padding:10px 14px;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+table.dre th:first-child{text-align:left;background:#f8fafc;color:var(--text-2)}
+table.dre th.col-w{background:var(--primary-soft);color:var(--primary);text-align:right}
+table.dre th.col-cb{background:var(--cb-soft);color:var(--cb);text-align:right}
+table.dre th.col-pf{background:var(--pf-soft);color:var(--pf);text-align:right}
+table.dre td{padding:7px 14px;border-bottom:1px solid var(--border)}
+table.dre td.val{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:0.85rem}
+table.dre td.val.neg{color:var(--negative)}
+table.dre td.val.pos{color:var(--accent);font-weight:600}
+table.dre td.val.muted{color:var(--text-3)}
+table.dre tr.spacer td{height:8px;border-bottom:none;background:transparent}
+table.dre tr.section td{font-weight:700;background:#f8fafc;border-top:1.5px solid var(--border);border-bottom:1.5px solid var(--border)}
+table.dre tr.section-hdr td{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2);background:#f8fafc;padding-top:10px;padding-bottom:6px}
+table.dre tr.indent td.lbl{padding-left:28px;color:var(--text-2);font-weight:400}
+table.dre tr.indent td.lbl.credit{color:var(--accent);font-weight:500}
+table.dre tr.result-row td{font-weight:700;font-size:0.925rem}
+table.dre tr.result-row td.val.w-bg{background:var(--primary-soft);color:var(--primary)}
+table.dre tr.result-row td.val.pf-bg{background:var(--pf-soft);color:var(--pf)}
+table.dre tr.result-row td.val.cb-bg{background:var(--cb-soft);color:var(--cb)}
+table.dre tr.final-row td{font-weight:800;font-size:1rem;background:#f8fafc;border-top:2px solid var(--border)}
+table.dre tr.note-row td{font-size:0.72rem;color:var(--text-3);font-style:italic;padding-top:10px;border-bottom:none}
+
+/* IMPACT CARDS */
+.impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:800px){.impact-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:450px){.impact-grid{grid-template-columns:1fr}}
+.impact-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.impact-card .ic-title{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-2);margin-bottom:12px}
+.impact-card .ic-before{font-size:0.8rem;color:var(--text-2);margin-bottom:4px}
+.impact-card .ic-before span{font-weight:600;color:var(--text)}
+.impact-card .ic-after{font-size:1.1rem;font-weight:800;color:var(--pf)}
+.impact-card .ic-delta{margin-top:6px;font-size:0.78rem;font-weight:600;color:var(--accent)}
+.impact-card .ic-delta.neg{color:var(--negative)}
+.ic-arrow{display:inline-block;margin:0 4px;color:var(--text-3)}
+
+/* FOOTER */
+footer{text-align:center;padding:20px;font-size:0.72rem;color:var(--text-3);border-top:1px solid var(--border);background:#fff;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>DRE Pro-forma 2025 — Woli + Projeto Casas Bahia Pay</h1>
+  <p>Base real: DFs Consolidados 2025 &nbsp;·&nbsp; + simulação do Projeto CB Pay rodando jan–dez/2025</p>
+</div>
+
+<div class="container">
+
+  <!-- PARAM BAR -->
+  <div class="card">
+    <div class="card-title">Parâmetros do Projeto CB Pay</div>
+    <div class="param-bar">
+      <div class="param-group">
+        <label>Contratos totais projetados</label>
+        <div class="input-wrap">
+          <button class="step-btn" onclick="stepField('proj-total',-10000)">−</button>
+          <input class="input wide" id="proj-total" value="821700" onblur="formatQtdOnBlur(this)" oninput="render()">
+          <button class="step-btn" onclick="stepField('proj-total',10000)">+</button>
+        </div>
+      </div>
+      <div class="param-group">
+        <label>% CB Pay s/ RB (fee plataforma)</label>
+        <div class="input-wrap">
+          <button class="step-btn" onclick="stepField('pct-cbpay',-0.5)">−</button>
+          <input class="input" id="pct-cbpay" value="80" onblur="formatPctOnBlur(this)" oninput="render()">
+          <span class="suffix">%</span>
+          <button class="step-btn" onclick="stepField('pct-cbpay',0.5)">+</button>
+        </div>
+      </div>
+      <div class="param-group" style="justify-content:flex-end">
+        <label>Mix total</label>
+        <div id="mix-badge" class="mix-badge ok">100%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKU GRID -->
+  <div class="card">
+    <div class="card-title">Mix de SKUs — Distribuição dos Contratos</div>
+    <div class="sku-grid" id="sku-grid"></div>
+  </div>
+
+  <!-- DRE TABLE -->
+  <div class="card">
+    <div class="card-title">Demonstração de Resultado do Exercício (Pro-forma)</div>
+    <div class="table-wrap">
+      <table class="dre" id="dre-table">
+        <thead>
+          <tr>
+            <th style="width:34%">Linha</th>
+            <th class="col-w">Woli 2025 Real</th>
+            <th class="col-cb">Projeto CB Pay</th>
+            <th class="col-pf">Pro-forma Consolidado</th>
+          </tr>
+        </thead>
+        <tbody id="dre-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- IMPACT CARDS -->
+  <div class="card">
+    <div class="card-title">Impacto do Projeto CB Pay</div>
+    <div class="impact-grid" id="impact-grid"></div>
+  </div>
+
+</div>
+
+<footer>Documento confidencial &nbsp;·&nbsp; uso restrito Woli / Casas Bahia</footer>
+
+<script>
+// ─── WOLI 2025 REAL ───────────────────────────────────────────────
+const W = {
+  rb:             18954799.46,
+  deducoes:        -898684.69,
+  rl:             18056114.77,
+  cogs:            -5623165.79,
+  lb:             12432948.98,
+  pessoal:         -3762188.14,
+  terceiros:       -6735845.52,
+  outrasDespesas:  -1109063.61,
+  outrasReceitas:    352667.10,
+  resultOp:        1178518.81,
+  resultFin:        -710449.87,
+  resultAntesIR:    468068.94,
+  irCsll:           -71405.19,
+  lucroLiquido:     396663.75,
+};
+
+// ─── SKU DEFINITIONS ──────────────────────────────────────────────
+const SKUS = [
+  {id:1, meses:1,  precoDefault:19.90, mixDefault:30, label:'SKU 1', titulo:'1 mês'},
+  {id:2, meses:12, precoDefault:12.50, mixDefault:30, label:'SKU 2', titulo:'12 meses'},
+  {id:3, meses:18, precoDefault:12.20, mixDefault:25, label:'SKU 3', titulo:'18 meses'},
+  {id:4, meses:24, precoDefault:10.40, mixDefault:15, label:'SKU 4', titulo:'24 meses'},
+];
+
+const TRIB = {iss:0.02, pis:0.0165, cofins:0.076};
+const COM_EXT_PCT = 0.05;
+const WHATS = 0.04;
+const COM_INT_PCT = 0.022;
+const CREDITO_RATE = 0.0925;
+const IR_RATE = 0.34;
+
+// ─── HELPERS ──────────────────────────────────────────────────────
+const fmtBRL = v => {
+  const abs = Math.abs(v);
+  const s = abs.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
+  return (v < 0 ? '−R$ ' : 'R$ ') + s;
+};
+const fmtPct = v => v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:2}) + '%';
+const parseNum = s => parseFloat(String(s).replace(/\./g,'').replace(',','.')) || 0;
+const parseInt0 = s => parseInt(String(s).replace(/\./g,'').replace(',','.')) || 0;
+
+function formatQtdOnBlur(el){
+  const v = parseInt0(el.value);
+  el.value = v.toLocaleString('pt-BR');
+}
+function formatPctOnBlur(el){
+  const v = parseNum(el.value);
+  el.value = v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:2});
+}
+function formatPrecoOnBlur(el){
+  const v = parseNum(el.value);
+  el.value = v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function stepField(id, delta){
+  const el = document.getElementById(id);
+  if(!el) return;
+  let v = (id==='proj-total') ? parseInt0(el.value) : parseNum(el.value);
+  v = Math.max(0, v + delta);
+  el.value = (id==='proj-total')
+    ? v.toLocaleString('pt-BR')
+    : v.toLocaleString('pt-BR',{minimumFractionDigits: (Math.abs(delta)<1?2:0), maximumFractionDigits:2});
+  render();
+}
+function stepSku(field, delta){
+  const el = document.getElementById(field);
+  if(!el) return;
+  let v = parseNum(el.value);
+  v = Math.max(0, v + delta);
+  el.value = v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  render();
+}
+function stepSkuMix(field, delta){
+  const el = document.getElementById(field);
+  if(!el) return;
+  let v = parseNum(el.value);
+  v = Math.max(0, Math.min(100, v + delta));
+  el.value = v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:1});
+  render();
+}
+
+// ─── BUILD SKU GRID ───────────────────────────────────────────────
+function buildSkuGrid(){
+  const grid = document.getElementById('sku-grid');
+  grid.innerHTML = SKUS.map(s => `
+    <div class="sku-card">
+      <div class="sku-card-head">
+        <span class="sku-label">${s.label}</span>
+        <span class="sku-title">${s.titulo}</span>
+      </div>
+      <div class="sku-field">
+        <label>Preço/mês (R$)</label>
+        <div class="stepper">
+          <button class="step-btn" onclick="stepSku('preco-${s.id}',-0.10)">−</button>
+          <input class="input" id="preco-${s.id}"
+            value="${s.precoDefault.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}"
+            onblur="formatPrecoOnBlur(this)" oninput="render()">
+          <button class="step-btn" onclick="stepSku('preco-${s.id}',0.10)">+</button>
+        </div>
+      </div>
+      <div class="sku-field">
+        <label>Mix (%)</label>
+        <div class="stepper">
+          <button class="step-btn" onclick="stepSkuMix('mix-${s.id}',-1)">−</button>
+          <input class="input" id="mix-${s.id}"
+            value="${s.mixDefault}"
+            onblur="formatPctOnBlur(this)" oninput="render()">
+          <button class="step-btn" onclick="stepSkuMix('mix-${s.id}',1)">+</button>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:0.68rem;color:var(--text-3)">Qtd contratos</span>
+        <span class="sku-qtd" id="qtd-${s.id}">—</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── CALCULATE CB PAY ─────────────────────────────────────────────
+function calcCB(){
+  const projTotal = parseInt0(document.getElementById('proj-total').value);
+  const cbpayPct = parseNum(document.getElementById('pct-cbpay').value) / 100;
+
+  const skuData = SKUS.map(s => ({
+    meses: s.meses,
+    preco: parseNum(document.getElementById(`preco-${s.id}`).value),
+    mix:   parseNum(document.getElementById(`mix-${s.id}`).value),
+    id:    s.id,
+  }));
+
+  const totalMix = skuData.reduce((a,s) => a+s.mix, 0);
+
+  // update mix badge
+  const badge = document.getElementById('mix-badge');
+  const mixOk = Math.abs(totalMix - 100) < 0.01;
+  badge.textContent = fmtPct(totalMix);
+  badge.className = 'mix-badge ' + (mixOk ? 'ok' : 'warn');
+
+  // qtd per SKU
+  skuData.forEach(s => {
+    s.qtd = Math.round(projTotal * s.mix / 100);
+    const el = document.getElementById(`qtd-${s.id}`);
+    if(el) el.textContent = s.qtd.toLocaleString('pt-BR');
+  });
+
+  const totQtd = skuData.reduce((a,s) => a+s.qtd, 0);
+
+  // RB
+  const rb_cb = skuData.reduce((a,s) => a + s.preco * s.meses * s.qtd, 0);
+
+  // Deductions
+  const iss_cb    = rb_cb * TRIB.iss;
+  const pis_cb    = rb_cb * TRIB.pis;
+  const cofins_cb = rb_cb * TRIB.cofins;
+  const deducoes_cb = -(iss_cb + pis_cb + cofins_cb);
+  const rl_cb = rb_cb + deducoes_cb;
+
+  // Weighted avg monthly price
+  const sumQtd = skuData.reduce((a,s) => a+s.qtd, 0);
+  const precoMedio = sumQtd > 0 ? skuData.reduce((a,s) => a + s.preco * s.qtd, 0) / sumQtd : 0;
+
+  // Comissões
+  const comExtUnit = precoMedio * COM_EXT_PCT;
+  const comissoes = -((comExtUnit + WHATS) * totQtd + COM_INT_PCT * rb_cb);
+
+  // CB Pay fee
+  const cbpayFee = -(cbpayPct * rb_cb);
+
+  // Crédito PIS/COFINS
+  const credito = -cbpayFee * CREDITO_RATE;
+
+  // Resultado Operacional CB Pay
+  const resultOp_cb = rl_cb + comissoes + cbpayFee + credito;
+
+  // IR/CSLL
+  const irCsll_cb = -(Math.max(0, resultOp_cb) * IR_RATE);
+
+  const contribuicaoLiquida_cb = resultOp_cb + irCsll_cb;
+
+  return {rb_cb, deducoes_cb, rl_cb, comissoes, cbpayFee, credito,
+          resultOp_cb, irCsll_cb, contribuicaoLiquida_cb, cbpayPct};
+}
+
+// ─── RENDER DRE TABLE ─────────────────────────────────────────────
+function renderDRE(cb){
+  const pf = {
+    rb:           W.rb + cb.rb_cb,
+    deducoes:     W.deducoes + cb.deducoes_cb,
+    rl:           W.rl + cb.rl_cb,
+    lb:           W.lb + cb.rl_cb,
+    resultOp:     W.resultOp + cb.resultOp_cb,
+    resultAntesIR: W.resultAntesIR + cb.resultOp_cb,
+    irCsll:       W.irCsll + cb.irCsll_cb,
+    lucroLiquido: W.resultAntesIR + cb.resultOp_cb + W.irCsll + cb.irCsll_cb,
+  };
+
+  const dash = `<span style="color:var(--text-3)">—</span>`;
+  const neg = (v,extra='') => `<td class="val neg ${extra}">${fmtBRL(v)}</td>`;
+  const pos = (v,extra='') => `<td class="val pos ${extra}">${fmtBRL(v)}</td>`;
+  const num = (v,extra='') => `<td class="val ${extra}">${fmtBRL(v)}</td>`;
+  const muted = () => `<td class="val muted">${dash}</td>`;
+
+  const cbpayPctLabel = (cb.cbpayPct*100).toLocaleString('pt-BR',{maximumFractionDigits:1}) + '%';
+
+  const rows = `
+    <tr class="section">
+      <td class="lbl">Receita Bruta de Serviços</td>
+      ${num(W.rb,'w-bg')} ${num(cb.rb_cb,'cb-bg')} ${num(pf.rb,'pf-bg')}
+    </tr>
+    <tr class="indent">
+      <td class="lbl">(−) Tributos s/ Receita (ISS/PIS/COFINS)</td>
+      ${neg(W.deducoes)} ${neg(cb.deducoes_cb)} ${neg(pf.deducoes)}
+    </tr>
+    <tr class="section">
+      <td class="lbl">(=) Receita Líquida</td>
+      ${num(W.rl)} ${num(cb.rl_cb)} ${num(pf.rl)}
+    </tr>
+    <tr class="spacer"><td colspan="4"></td></tr>
+    <tr class="indent">
+      <td class="lbl">(−) Custo dos Serviços Prestados</td>
+      ${neg(W.cogs)} ${muted()} ${neg(W.cogs)}
+    </tr>
+    <tr class="section">
+      <td class="lbl">(=) Lucro Bruto</td>
+      ${num(W.lb)} ${num(cb.rl_cb)} ${num(pf.lb)}
+    </tr>
+    <tr class="spacer"><td colspan="4"></td></tr>
+    <tr class="section-hdr">
+      <td colspan="4">Despesas Operacionais</td>
+    </tr>
+    <tr class="indent">
+      <td class="lbl">(−) Pessoal Próprio</td>
+      ${neg(W.pessoal)} ${muted()} ${neg(W.pessoal)}
+    </tr>
+    <tr class="indent">
+      <td class="lbl">(−) Serviços de Terceiros</td>
+      ${neg(W.terceiros)} ${muted()} ${neg(W.terceiros)}
+    </tr>
+    <tr class="indent">
+      <td class="lbl">(−) Comissões Variáveis CB Pay</td>
+      ${muted()} ${neg(cb.comissoes)} ${neg(cb.comissoes)}
+    </tr>
+    <tr class="indent">
+      <td class="lbl">(−) Intermediação CB Pay (${cbpayPctLabel} RB)</td>
+      ${muted()} ${neg(cb.cbpayFee)} ${neg(cb.cbpayFee)}
+    </tr>
+    <tr class="indent">
+      <td class="lbl credit">(+) Crédito PIS/COFINS s/ NF CB Pay</td>
+      ${muted()} <td class="val pos">${fmtBRL(cb.credito)}</td> <td class="val pos">${fmtBRL(cb.credito)}</td>
+    </tr>
+    <tr class="indent">
+      <td class="lbl">(−) Outras Despesas (Woli)</td>
+      ${neg(W.outrasDespesas)} ${muted()} ${neg(W.outrasDespesas)}
+    </tr>
+    <tr class="indent">
+      <td class="lbl credit">(+) Outras Receitas (Woli)</td>
+      <td class="val pos">${fmtBRL(W.outrasReceitas)}</td> ${muted()} <td class="val pos">${fmtBRL(W.outrasReceitas)}</td>
+    </tr>
+    <tr class="spacer"><td colspan="4"></td></tr>
+    <tr class="result-row">
+      <td class="lbl" style="font-weight:700">(=) Resultado Operacional</td>
+      <td class="val w-bg">${fmtBRL(W.resultOp)}</td>
+      <td class="val cb-bg">${fmtBRL(cb.resultOp_cb)}</td>
+      <td class="val pf-bg">${fmtBRL(pf.resultOp)}</td>
+    </tr>
+    <tr class="spacer"><td colspan="4"></td></tr>
+    <tr class="indent">
+      <td class="lbl">Resultado Financeiro</td>
+      ${neg(W.resultFin)} ${muted()} ${neg(W.resultFin)}
+    </tr>
+    <tr class="section">
+      <td class="lbl">(=) Resultado Antes IR/CSLL</td>
+      ${num(W.resultAntesIR)} ${num(cb.resultOp_cb)} ${num(pf.resultAntesIR)}
+    </tr>
+    <tr class="indent">
+      <td class="lbl">(−) IR + CSLL</td>
+      ${neg(W.irCsll)} ${neg(cb.irCsll_cb)} ${neg(pf.irCsll)}
+    </tr>
+    <tr class="spacer"><td colspan="4"></td></tr>
+    <tr class="final-row">
+      <td class="lbl" style="font-weight:800">(=) LUCRO LÍQUIDO</td>
+      <td class="val" style="color:var(--primary);font-weight:800">${fmtBRL(W.lucroLiquido)}</td>
+      <td class="val" style="color:var(--cb);font-weight:800">${fmtBRL(cb.contribuicaoLiquida_cb)}</td>
+      <td class="val" style="color:var(--pf);font-weight:800">${fmtBRL(pf.lucroLiquido)}</td>
+    </tr>
+    <tr class="note-row">
+      <td colspan="4">Nota: IR/CSLL calculado a 34% (Lucro Real) sobre o resultado incremental CB Pay. Custos fixos compartilhados — sem incremento para o projeto CB Pay.</td>
+    </tr>
+  `;
+
+  document.getElementById('dre-body').innerHTML = rows;
+}
+
+// ─── RENDER IMPACT CARDS ──────────────────────────────────────────
+function renderImpact(cb){
+  const pf_rb  = W.rb + cb.rb_cb;
+  const pf_op  = W.resultOp + cb.resultOp_cb;
+  const pf_ll  = W.resultAntesIR + cb.resultOp_cb + W.irCsll + cb.irCsll_cb;
+  const mg_bef = W.lucroLiquido / W.rb * 100;
+  const mg_aft = pf_ll / pf_rb * 100;
+
+  const deltaSign = d => d >= 0 ? '+' : '';
+
+  const cards = [
+    {
+      title: 'Receita Bruta',
+      before: W.rb,
+      after:  pf_rb,
+      delta:  cb.rb_cb,
+      isMoney: true,
+    },
+    {
+      title: 'Resultado Operacional',
+      before: W.resultOp,
+      after:  pf_op,
+      delta:  cb.resultOp_cb,
+      isMoney: true,
+    },
+    {
+      title: 'Lucro Líquido',
+      before: W.lucroLiquido,
+      after:  pf_ll,
+      delta:  pf_ll - W.lucroLiquido,
+      isMoney: true,
+    },
+    {
+      title: 'Margem Líquida',
+      before: mg_bef,
+      after:  mg_aft,
+      delta:  mg_aft - mg_bef,
+      isMoney: false,
+    },
+  ];
+
+  document.getElementById('impact-grid').innerHTML = cards.map(c => {
+    const beforeFmt = c.isMoney ? fmtBRL(c.before) : fmtPct(c.before);
+    const afterFmt  = c.isMoney ? fmtBRL(c.after)  : fmtPct(c.after);
+    const deltaSgn  = c.delta >= 0 ? '+' : '';
+    const deltaFmt  = c.isMoney
+      ? deltaSgn + fmtBRL(Math.abs(c.delta)).replace('R$ ','R$ ')
+      : deltaSgn + fmtPct(c.delta);
+    const deltaClass = c.delta >= 0 ? '' : 'neg';
+    const deltaLabel = c.isMoney
+      ? (c.delta >= 0 ? `+${fmtBRL(c.delta)}` : fmtBRL(c.delta))
+      : `${deltaSgn}${fmtPct(c.delta)}`;
+    return `
+      <div class="impact-card">
+        <div class="ic-title">${c.title}</div>
+        <div class="ic-before">Real 2025: <span>${beforeFmt}</span></div>
+        <div class="ic-after">${afterFmt}</div>
+        <div class="ic-delta ${deltaClass}">${deltaLabel} c/ CB Pay</div>
+      </div>`;
+  }).join('');
+}
+
+// ─── MAIN RENDER ──────────────────────────────────────────────────
+function render(){
+  const cb = calcCB();
+  renderDRE(cb);
+  renderImpact(cb);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+buildSkuGrid();
+
+// Add focus-select-all to all .input elements (post-build)
+document.querySelectorAll('input.input').forEach(el => {
+  el.addEventListener('focus', () => el.select());
+});
+
+render();
+</script>
+</body>
+</html>
