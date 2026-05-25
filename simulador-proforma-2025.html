@@ -222,6 +222,7 @@ const W = {
   outrasDespesas:  -1109063.61,
   outrasReceitas:   352667.10,
   resultOp:        1178518.81,
+  da:               38180.38,
   resultFin:       -710449.87,
   resultAntesIR:   468068.94,
   irCsll:          -71405.19,
@@ -440,7 +441,20 @@ function render() {
   html += buildRow('Outras Despesas (Woli)', W.outrasDespesas, null, W.outrasDespesas, {indent:true});
   html += buildRow('Outras Receitas (Woli)', W.outrasReceitas, null, W.outrasReceitas, {indent:true, wPos:true, pPos:true});
   html += spacer;
-  html += buildRow('(=) Resultado Operacional', W.resultOp, cb.resultOp_cb, W.resultOp + cb.resultOp_cb, {trCls:'row-result', resultRow:true});
+  html += buildRow('(=) Resultado Operacional (EBIT)', W.resultOp, cb.resultOp_cb, W.resultOp + cb.resultOp_cb, {trCls:'row-result', resultRow:true});
+  html += spacer;
+  var ebitda_woli = W.resultOp + W.da;
+  var ebitda_cb   = cb.resultOp_cb;
+  var ebitda_pf   = ebitda_woli + ebitda_cb;
+  var ebitdaM_w   = W.rb > 0 ? ebitda_woli / W.rb * 100 : 0;
+  var ebitdaM_cb  = cb.rb_cb > 0 ? ebitda_cb / cb.rb_cb * 100 : 0;
+  var ebitdaM_pf  = (W.rb + cb.rb_cb) > 0 ? ebitda_pf / (W.rb + cb.rb_cb) * 100 : 0;
+  html += buildRow('(+) Deprecia&ccedil;&atilde;o e Amortiza&ccedil;&atilde;o', W.da, 0, W.da, {indent:true, wPos:true, pPos:true});
+  html += buildRow('(=) EBITDA', ebitda_woli, ebitda_cb, ebitda_pf, {trCls:'row-result', resultRow:true});
+  html += '<tr class="row-note"><td class="cell-linha" colspan="1" style="font-size:11px;color:var(--text-3);padding-left:32px">Margem EBITDA</td>'
+    + '<td class="cell-num" style="font-size:11px;color:var(--text-3)">' + fmtPct(ebitdaM_w) + '</td>'
+    + '<td class="cell-num" style="font-size:11px;color:var(--text-3)">' + fmtPct(ebitdaM_cb) + '</td>'
+    + '<td class="cell-num" style="font-size:11px;color:var(--text-3)">' + fmtPct(ebitdaM_pf) + '</td></tr>';
   html += spacer;
   html += buildRow('Resultado Financeiro', W.resultFin, null, W.resultFin, {indent:true});
   html += buildRow('(=) Resultado Antes IR/CSLL', W.resultAntesIR, cb.resultOp_cb, resultAntesIR_pf, {trCls:'row-section'});
@@ -455,11 +469,16 @@ function render() {
   var mgBefore = W.lucroLiquido / W.rb * 100;
   var mgAfter  = lucroLiquido_pf / (W.rb + cb.rb_cb) * 100;
 
+  var ebitda_w_card  = W.resultOp + W.da;
+  var ebitda_pf_card = ebitda_w_card + cb.resultOp_cb;
+  var ebitdaMw_card  = W.rb > 0 ? ebitda_w_card / W.rb * 100 : 0;
+  var ebitdaMpf_card = (W.rb + cb.rb_cb) > 0 ? ebitda_pf_card / (W.rb + cb.rb_cb) * 100 : 0;
+
   var cards = [
-    { label:'Receita Bruta',         before:W.rb,          after:W.rb + cb.rb_cb,           delta:cb.rb_cb,                    isMargem:false },
-    { label:'Resultado Operacional', before:W.resultOp,    after:W.resultOp + cb.resultOp_cb, delta:cb.resultOp_cb,              isMargem:false },
+    { label:'Receita Bruta',         before:W.rb,           after:W.rb + cb.rb_cb,            delta:cb.rb_cb,                         isMargem:false },
+    { label:'EBITDA',                before:ebitda_w_card,  after:ebitda_pf_card,             delta:ebitda_pf_card - ebitda_w_card,   isMargem:false },
+    { label:'Margem EBITDA',         before:ebitdaMw_card,  after:ebitdaMpf_card,             delta:ebitdaMpf_card - ebitdaMw_card,   isMargem:true  },
     { label:'Lucro L&iacute;quido',  before:W.lucroLiquido, after:lucroLiquido_pf,            delta:lucroLiquido_pf - W.lucroLiquido, isMargem:false },
-    { label:'Margem L&iacute;quida', before:mgBefore,       after:mgAfter,                   delta:mgAfter - mgBefore,           isMargem:true  },
   ];
 
   document.getElementById('impact-grid').innerHTML = cards.map(function(c) {
