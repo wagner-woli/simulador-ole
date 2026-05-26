@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRE Pro-forma 2025 — Woli + Projeto CB Pay</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#0a3d62; --primary-2:#062a44; --primary-soft:#e8eef5;
+  --cb:#b91c1c; --cb-2:#7f1d1d; --cb-soft:#fee2e2;
+  --pf:#15803d; --pf-soft:#dcfce7;
+  --accent:#15803d; --negative:#b91c1c; --warn:#d97706;
+  --text:#0f172a; --text-2:#475569; --text-3:#94a3b8;
+  --border:#e2e8f0; --radius:14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--text); font-size: 14px; }
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+  color: #fff; padding: 28px 32px 24px;
+}
+.header h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.3px; }
+.header p { margin-top: 6px; font-size: 0.82rem; opacity: 0.78; }
+
+/* MAIN */
+.main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+
+/* PARAM BAR */
+.param-bar {
+  background: #fff; border-radius: var(--radius); border: 1px solid var(--border);
+  padding: 18px 20px; margin-bottom: 20px;
+  display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end;
+}
+.param-group { display: flex; flex-direction: column; gap: 5px; }
+.param-group label { font-size: 0.73rem; font-weight: 600; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; }
+.stepper { display: flex; align-items: center; gap: 0; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
+.step-btn {
+  width: 30px; height: 34px; border: none; background: #f8fafc; color: var(--text-2);
+  font-size: 1rem; font-weight: 700; cursor: pointer; transition: background .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.step-btn:hover { background: var(--primary-soft); color: var(--primary); }
+.stepper input {
+  border: none; outline: none; text-align: center;
+  height: 34px; font-size: 0.88rem; font-family: inherit; color: var(--text);
+  background: #fff; font-weight: 600;
+}
+.input-proj { width: 110px; }
+.input-pct  { width: 64px; }
+
+.mix-indicator {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+  white-space: nowrap;
+}
+.mix-ok  { background: var(--pf-soft); color: var(--pf); }
+.mix-warn{ background: #fef3c7; color: var(--warn); }
+
+/* SKU GRID */
+.sku-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;
+}
+.sku-card {
+  background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius);
+  padding: 14px 14px 12px;
+}
+.sku-label { font-size: 0.7rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.sku-titulo { font-size: 0.78rem; color: var(--text-2); margin-bottom: 10px; font-weight: 500; }
+.sku-field label { font-size: 0.68rem; color: var(--text-3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; display: block; }
+.sku-field + .sku-field { margin-top: 8px; }
+.qtd-badge {
+  margin-top: 10px; background: var(--primary-soft); color: var(--primary);
+  border-radius: 6px; padding: 5px 8px; font-size: 0.78rem; font-weight: 700;
+  display: flex; justify-content: space-between;
+}
+.qtd-badge span { font-weight: 400; color: var(--text-2); }
+
+/* DRE TABLE */
+.section-title { font-size: 0.78rem; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.6px; margin: 24px 0 8px; }
+.table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1.5px solid var(--border); background: #fff; margin-bottom: 24px; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  padding: 12px 14px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; border-bottom: 2px solid var(--border); white-space: nowrap;
+}
+th.col-linha { text-align: left; background: #f8fafc; color: var(--text-2); min-width: 230px; }
+th.col-woli  { text-align: right; background: var(--primary-soft); color: var(--primary); }
+th.col-cb    { text-align: right; background: var(--cb-soft); color: var(--cb); }
+th.col-pf    { text-align: right; background: var(--pf-soft); color: var(--pf); }
+
+tbody tr td { padding: 7px 14px; border-bottom: 1px solid #f1f5f9; font-size: 0.83rem; }
+tbody tr:last-child td { border-bottom: none; }
+
+td.cell-linha { color: var(--text); }
+td.cell-num { text-align: right; font-variant-numeric: tabular-nums; }
+td.neg  { color: var(--negative); }
+td.pos  { color: var(--pf); }
+td.muted{ color: var(--text-3); }
+
+tr.row-section td { font-weight: 700; background: #f8fafc; border-top: 1.5px solid var(--border); border-bottom: 1.5px solid var(--border); font-size: 0.85rem; }
+tr.row-indent td.cell-linha { padding-left: 28px; color: var(--text-2); }
+tr.row-result td { font-weight: 700; font-size: 0.88rem; }
+tr.row-result td.col-w { background: var(--primary-soft); }
+tr.row-result td.col-c { background: var(--cb-soft); }
+tr.row-result td.col-p { background: var(--pf-soft); }
+tr.row-lucro td { font-weight: 800; font-size: 0.95rem; }
+tr.row-lucro td.col-w { background: var(--primary-soft); border-top: 2px solid var(--primary); }
+tr.row-lucro td.col-c { background: var(--cb-soft); border-top: 2px solid var(--cb); }
+tr.row-lucro td.col-p { background: var(--pf-soft); border-top: 2px solid var(--pf); }
+tr.row-lucro td.cell-linha { background: var(--pf-soft); border-top: 2px solid var(--pf); }
+tr.row-result td.cell-linha { background: var(--pf-soft); }
+tr.row-spacer td { height: 8px; padding: 0; background: #f8fafc; border-bottom: 1px solid var(--border); }
+tr.row-despop td { font-weight: 700; background: #f8fafc; color: var(--text-2); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; border-top: 1.5px solid var(--border); }
+tr.row-note td { padding: 10px 14px; font-style: italic; font-size: 0.74rem; color: var(--text-3); background: #fafafa; border-top: 1px solid var(--border); }
+
+/* IMPACT CARDS */
+.impact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 32px; }
+.impact-card {
+  background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius);
+  padding: 16px 16px 14px; display: flex; flex-direction: column; gap: 6px;
+}
+.impact-card .ic-label { font-size: 0.7rem; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; }
+.impact-card .ic-after { font-size: 1.15rem; font-weight: 800; color: var(--pf); margin-top: 2px; }
+.impact-card .ic-before { font-size: 0.77rem; color: var(--text-3); }
+.impact-card .ic-delta { font-size: 0.8rem; font-weight: 700; color: var(--pf); background: var(--pf-soft); display: inline-block; padding: 2px 8px; border-radius: 20px; margin-top: 2px; }
+.impact-card .ic-delta.neg { color: var(--negative); background: var(--cb-soft); }
+
+/* FOOTER */
+footer { text-align: center; font-size: 0.73rem; color: var(--text-3); padding: 20px 16px; border-top: 1px solid var(--border); background: #fff; }
+
+@media (max-width: 700px) {
+  .sku-grid { grid-template-columns: repeat(2, 1fr); }
+  .impact-grid { grid-template-columns: repeat(2, 1fr); }
+  .header { padding: 20px 16px 16px; }
+  .header h1 { font-size: 1.1rem; }
+}
+@media (max-width: 420px) {
+  .sku-grid { grid-template-columns: 1fr 1fr; }
+  .impact-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>DRE Pro-forma 2025 — Woli + Projeto Casas Bahia Pay</h1>
+  <p>Base real: DFs Consolidados 2025 &nbsp;·&nbsp; + simulação do Projeto CB Pay rodando jan–dez/2025</p>
+</div>
+
+<div class="main">
+
+  <!-- PARAM BAR -->
+  <div class="param-bar">
+    <div class="param-group">
+      <label>Contratos Totais Projetados</label>
+      <div class="stepper">
+        <button class="step-btn" onclick="step('proj-total',-1000)">−</button>
+        <input class="input-proj" id="proj-total" value="821.700" onblur="formatQtdOnBlur(this)" oninput="render()" onfocus="this.select()">
+        <button class="step-btn" onclick="step('proj-total',1000)">+</button>
+      </div>
+    </div>
+    <div class="param-group">
+      <label>% Fee CB Pay (s/ RB)</label>
+      <div class="stepper">
+        <button class="step-btn" onclick="step('pct-cbpay',-1)">−</button>
+        <input class="input-pct" id="pct-cbpay" value="85" onblur="formatPctOnBlur(this)" oninput="render()" onfocus="this.select()">
+        <button class="step-btn" onclick="step('pct-cbpay',1)">+</button>
+      </div>
+    </div>
+    <div class="param-group" style="justify-content:flex-end;padding-bottom:2px">
+      <label>Mix Total</label>
+      <div id="mix-indicator" class="mix-indicator mix-ok">&#10003; 100%</div>
+    </div>
+  </div>
+
+  <!-- SKU GRID -->
+  <div class="sku-grid" id="sku-grid">
+    <!-- rendered by JS -->
+  </div>
+
+  <!-- DRE TABLE -->
+  <div class="section-title">Demonstração de Resultado — Pro-forma Consolidado 2025</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-linha">Linha</th>
+          <th class="col-woli">Woli 2025 Real</th>
+          <th class="col-cb">Projeto CB Pay</th>
+          <th class="col-pf">Pro-forma Consolidado</th>
+        </tr>
+      </thead>
+      <tbody id="dre-body">
+        <!-- rendered by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- IMPACT CARDS -->
+  <div class="section-title">Impacto do Projeto CB Pay</div>
+  <div class="impact-grid" id="impact-grid">
+    <!-- rendered by JS -->
+  </div>
+
+</div>
+
+<footer>Documento confidencial &nbsp;·&nbsp; uso restrito Woli / Casas Bahia</footer>
+
+<script>
+/* ── WOLI 2025 REAL (hardcoded) ── */
+const W = {
+  rb:              18954799.46,
+  deducoes:        -898684.69,
+  rl:              18056114.77,
+  cogs:            -5623165.79,
+  lb:              12432948.98,
+  pessoal:         -3762188.14,
+  terceiros:       -6735845.52,
+  outrasDespesas:  -1109063.61,
+  outrasReceitas:   352667.10,
+  resultOp:        1178518.81,
+  da:               38180.38,
+  resultFin:       -710449.87,
+  resultAntesIR:   468068.94,
+  irCsll:          -71405.19,
+  lucroLiquido:    396663.75,
+};
+
+/* ── SKU DEFINITIONS ── */
+const SKUS = [
+  { id:1, meses:1,  precoDefault:19.90, mixDefault:30, label:'SKU 1', titulo:'1 mes' },
+  { id:2, meses:12, precoDefault:12.50, mixDefault:30, label:'SKU 2', titulo:'12 meses' },
+  { id:3, meses:18, precoDefault:12.20, mixDefault:25, label:'SKU 3', titulo:'18 meses' },
+  { id:4, meses:24, precoDefault:10.40, mixDefault:15, label:'SKU 4', titulo:'24 meses' },
+];
+
+/* ── FORMATTING ── */
+const fmtBRL = v => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:0,maximumFractionDigits:0}).format(v);
+const fmtPct = v => v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:2})+'%';
+const parseNum = s => parseFloat((s+'').replace(/\./g,'').replace(',','.')) || 0;
+const parseInt0 = s => parseInt((s+'').replace(/\./g,'').replace(',','.')) || 0;
+
+function formatQtdOnBlur(el) {
+  const v = parseInt0(el.value);
+  el.value = v.toLocaleString('pt-BR');
+}
+function formatPctOnBlur(el) {
+  const v = parseNum(el.value);
+  el.value = v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:2});
+}
+function formatPrecoOnBlur(el) {
+  const v = parseNum(el.value);
+  el.value = v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function step(id, delta) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (id === 'proj-total') {
+    let v = parseInt0(el.value) + delta;
+    if (v < 0) v = 0;
+    el.value = v.toLocaleString('pt-BR');
+  } else {
+    let v = parseNum(el.value) + delta;
+    if (v < 0) v = 0;
+    el.value = v.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:2});
+  }
+  render();
+}
+
+function stepSku(id, delta, isPreco) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (isPreco) {
+    let v = parseNum(el.value) + delta;
+    if (v < 0) v = 0;
+    el.value = v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  } else {
+    let v = parseInt0(el.value) + delta;
+    if (v < 0) v = 0;
+    if (v > 100) v = 100;
+    el.value = v;
+  }
+  render();
+}
+
+/* ── BUILD SKU GRID ── */
+function buildSkuGrid() {
+  const grid = document.getElementById('sku-grid');
+  grid.innerHTML = SKUS.map(s => `
+    <div class="sku-card">
+      <div class="sku-label">${s.label}</div>
+      <div class="sku-titulo">${s.titulo}</div>
+      <div class="sku-field">
+        <label>Preco/mes (R$)</label>
+        <div class="stepper">
+          <button class="step-btn" onclick="stepSku('preco-${s.id}',-0.10,true)">&#8722;</button>
+          <input style="width:72px" id="preco-${s.id}" value="${s.precoDefault.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}"
+            onblur="formatPrecoOnBlur(this)" oninput="render()" onfocus="this.select()">
+          <button class="step-btn" onclick="stepSku('preco-${s.id}',0.10,true)">+</button>
+        </div>
+      </div>
+      <div class="sku-field">
+        <label>Mix (%)</label>
+        <div class="stepper">
+          <button class="step-btn" onclick="stepSku('mix-${s.id}',-1,false)">&#8722;</button>
+          <input style="width:52px" id="mix-${s.id}" value="${s.mixDefault}"
+            oninput="render()" onfocus="this.select()">
+          <button class="step-btn" onclick="stepSku('mix-${s.id}',1,false)">+</button>
+        </div>
+      </div>
+      <div class="qtd-badge" id="qtd-badge-${s.id}">
+        <span>Contratos</span> <strong>--</strong>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── COMPUTE CB PAY ── */
+function computeCB(projTotal, cbpayPct) {
+  const ISS_RATE = 0.02;
+  const PIS_RATE = 0.0165;
+  const COF_RATE = 0.076;
+  const COM_EXT_PCT = 0.05;
+  const WHATS = 0.04;
+  const COM_INT_PCT = 0.022;
+  const CREDITO_RATE = 0.0925;
+
+  let rb_cb = 0, totQtd = 0, sumPrecoMens = 0;
+  const skuData = SKUS.map(s => {
+    const preco = parseNum(document.getElementById('preco-'+s.id).value);
+    const mix   = parseInt0(document.getElementById('mix-'+s.id).value);
+    const qtd   = Math.round(projTotal * mix / 100);
+    rb_cb       += preco * s.meses * qtd;
+    totQtd      += qtd;
+    sumPrecoMens += preco * qtd;
+    return { ...s, preco, mix, qtd };
+  });
+
+  const tribRate   = ISS_RATE + PIS_RATE + COF_RATE;
+  const deducoes_cb = -(rb_cb * tribRate);
+  const rl_cb       = rb_cb + deducoes_cb;
+
+  const precoMedio  = totQtd > 0 ? sumPrecoMens / totQtd : 0;
+  const comExtUnit  = precoMedio * COM_EXT_PCT;
+  const comissoes   = -((comExtUnit + WHATS) * totQtd + COM_INT_PCT * rb_cb);
+  const cbpayFee    = -(cbpayPct / 100 * rb_cb);
+  const credito     = -cbpayFee * CREDITO_RATE;
+
+  const resultOp_cb = rl_cb + comissoes + cbpayFee + credito;
+  const irCsll_cb   = -(Math.max(0, resultOp_cb) * 0.34);
+  const contrib_cb  = resultOp_cb + irCsll_cb;
+
+  return { rb_cb, deducoes_cb, rl_cb, comissoes, cbpayFee, credito,
+           resultOp_cb, irCsll_cb, contrib_cb, skuData, totQtd };
+}
+
+/* ── CELL HELPERS ── */
+function numCell(v, extraClass) {
+  if (v === null) return '<td class="cell-num muted">&mdash;</td>';
+  const colorCls = v < 0 ? ' neg' : (extraClass === 'pos' ? ' pos' : '');
+  return '<td class="cell-num' + colorCls + '">' + fmtBRL(v) + '</td>';
+}
+
+function resultCell(v, colCls) {
+  if (v === null) return '<td class="cell-num muted ' + colCls + '">&mdash;</td>';
+  const colorCls = v < 0 ? ' neg' : '';
+  return '<td class="cell-num' + colorCls + ' ' + colCls + '">' + fmtBRL(v) + '</td>';
+}
+
+function buildRow(label, w, cb, pf, opts) {
+  opts = opts || {};
+  var trCls = opts.trCls || '';
+  var indentCls = opts.indent ? ' row-indent' : '';
+  var lCls = opts.lCls || '';
+  var wCell, cCell, pCell;
+
+  if (opts.resultRow) {
+    wCell = resultCell(w,  'col-w');
+    cCell = resultCell(cb, 'col-c');
+    pCell = resultCell(pf, 'col-p');
+  } else {
+    wCell = numCell(w,  opts.wPos ? 'pos' : '');
+    cCell = numCell(cb, opts.cPos ? 'pos' : '');
+    pCell = numCell(pf, opts.pPos ? 'pos' : '');
+  }
+
+  return '<tr class="' + trCls + indentCls + '">'
+    + '<td class="cell-linha ' + lCls + '">' + label + '</td>'
+    + wCell + cCell + pCell + '</tr>';
+}
+
+/* ── RENDER ── */
+function render() {
+  const projTotal = parseInt0(document.getElementById('proj-total').value);
+  const cbpayPct  = parseNum(document.getElementById('pct-cbpay').value);
+  const cb = computeCB(projTotal, cbpayPct);
+
+  /* mix indicator */
+  var mixSum = 0;
+  SKUS.forEach(function(s){ mixSum += parseInt0(document.getElementById('mix-'+s.id).value); });
+  var mixEl = document.getElementById('mix-indicator');
+  if (mixSum === 100) {
+    mixEl.textContent = '✓ ' + mixSum + '%';
+    mixEl.className = 'mix-indicator mix-ok';
+  } else {
+    mixEl.textContent = '⚠ ' + mixSum + '%';
+    mixEl.className = 'mix-indicator mix-warn';
+  }
+
+  /* qtd badges */
+  cb.skuData.forEach(function(s) {
+    var el = document.getElementById('qtd-badge-'+s.id);
+    if (el) el.innerHTML = '<span>Contratos</span> <strong>' + s.qtd.toLocaleString('pt-BR') + '</strong>';
+  });
+
+  /* pro-forma totals */
+  var resultAntesIR_pf = W.resultAntesIR + cb.resultOp_cb;
+  var irCsll_pf        = W.irCsll + cb.irCsll_cb;
+  var lucroLiquido_pf  = resultAntesIR_pf + irCsll_pf;
+
+  var spacer = '<tr class="row-spacer"><td colspan="4"></td></tr>';
+  var html = '';
+
+  html += buildRow('Receita Bruta de Servicos', W.rb, cb.rb_cb, W.rb + cb.rb_cb, {trCls:'row-section'});
+  html += buildRow('(&minus;) Tributos s/ Receita (ISS/PIS/COFINS)', W.deducoes, cb.deducoes_cb, W.deducoes + cb.deducoes_cb, {indent:true});
+  html += buildRow('(=) Receita L&iacute;quida', W.rl, cb.rl_cb, W.rl + cb.rl_cb, {trCls:'row-section'});
+  html += spacer;
+  html += buildRow('(&minus;) Custo dos Servicos Prestados', W.cogs, null, W.cogs, {indent:true});
+  html += buildRow('(=) Lucro Bruto', W.lb, cb.rl_cb, W.lb + cb.rl_cb, {trCls:'row-section'});
+  html += spacer;
+  html += '<tr class="row-despop"><td class="cell-linha" colspan="4">Despesas Operacionais</td></tr>';
+  html += buildRow('Pessoal Pr&oacute;prio', W.pessoal, null, W.pessoal, {indent:true});
+  html += buildRow('Servicos de Terceiros', W.terceiros, null, W.terceiros, {indent:true});
+  html += buildRow('Comiss&otilde;es Vari&aacute;veis CB Pay', null, cb.comissoes, cb.comissoes, {indent:true});
+  html += buildRow('Intermedia&ccedil;&atilde;o CB Pay (' + cbpayPct.toLocaleString('pt-BR') + '% s/ RB)', null, cb.cbpayFee, cb.cbpayFee, {indent:true});
+  html += buildRow('(+) Cr&eacute;dito PIS/COFINS s/ NF CB Pay', null, cb.credito, cb.credito, {indent:true, cPos:true, pPos:true});
+  html += buildRow('Outras Despesas (Woli)', W.outrasDespesas, null, W.outrasDespesas, {indent:true});
+  html += buildRow('Outras Receitas (Woli)', W.outrasReceitas, null, W.outrasReceitas, {indent:true, wPos:true, pPos:true});
+  html += spacer;
+  html += buildRow('(=) Resultado Operacional (EBIT)', W.resultOp, cb.resultOp_cb, W.resultOp + cb.resultOp_cb, {trCls:'row-result', resultRow:true});
+  html += spacer;
+  var ebitda_woli = W.resultOp + W.da;
+  var ebitda_cb   = cb.resultOp_cb;
+  var ebitda_pf   = ebitda_woli + ebitda_cb;
+  var ebitdaM_w   = W.rb > 0 ? ebitda_woli / W.rb * 100 : 0;
+  var ebitdaM_cb  = cb.rb_cb > 0 ? ebitda_cb / cb.rb_cb * 100 : 0;
+  var ebitdaM_pf  = (W.rb + cb.rb_cb) > 0 ? ebitda_pf / (W.rb + cb.rb_cb) * 100 : 0;
+  html += buildRow('(+) Deprecia&ccedil;&atilde;o e Amortiza&ccedil;&atilde;o', W.da, 0, W.da, {indent:true, wPos:true, pPos:true});
+  html += buildRow('(=) EBITDA', ebitda_woli, ebitda_cb, ebitda_pf, {trCls:'row-result', resultRow:true});
+  html += '<tr class="row-note"><td class="cell-linha" colspan="1" style="font-size:11px;color:var(--text-3);padding-left:32px">Margem EBITDA</td>'
+    + '<td class="cell-num" style="font-size:11px;color:var(--text-3)">' + fmtPct(ebitdaM_w) + '</td>'
+    + '<td class="cell-num" style="font-size:11px;color:var(--text-3)">' + fmtPct(ebitdaM_cb) + '</td>'
+    + '<td class="cell-num" style="font-size:11px;color:var(--text-3)">' + fmtPct(ebitdaM_pf) + '</td></tr>';
+  html += spacer;
+  html += buildRow('Resultado Financeiro', W.resultFin, null, W.resultFin, {indent:true});
+  html += buildRow('(=) Resultado Antes IR/CSLL', W.resultAntesIR, cb.resultOp_cb, resultAntesIR_pf, {trCls:'row-section'});
+  html += buildRow('(&minus;) IR + CSLL', W.irCsll, cb.irCsll_cb, irCsll_pf, {indent:true});
+  html += spacer;
+  html += buildRow('(=) LUCRO L&Iacute;QUIDO', W.lucroLiquido, cb.contrib_cb, lucroLiquido_pf, {trCls:'row-lucro', resultRow:true});
+  html += '<tr class="row-note"><td colspan="4">Nota: IR/CSLL calculado a 34% (Lucro Real) sobre o resultado incremental CB Pay. Custos fixos compartilhados &mdash; sem incremento para o projeto CB Pay.</td></tr>';
+
+  document.getElementById('dre-body').innerHTML = html;
+
+  /* IMPACT CARDS */
+  var mgBefore = W.lucroLiquido / W.rb * 100;
+  var mgAfter  = lucroLiquido_pf / (W.rb + cb.rb_cb) * 100;
+
+  var ebitda_w_card  = W.resultOp + W.da;
+  var ebitda_pf_card = ebitda_w_card + cb.resultOp_cb;
+  var ebitdaMw_card  = W.rb > 0 ? ebitda_w_card / W.rb * 100 : 0;
+  var ebitdaMpf_card = (W.rb + cb.rb_cb) > 0 ? ebitda_pf_card / (W.rb + cb.rb_cb) * 100 : 0;
+
+  var cards = [
+    { label:'Receita Bruta',         before:W.rb,           after:W.rb + cb.rb_cb,            delta:cb.rb_cb,                         isMargem:false },
+    { label:'EBITDA',                before:ebitda_w_card,  after:ebitda_pf_card,             delta:ebitda_pf_card - ebitda_w_card,   isMargem:false },
+    { label:'Margem EBITDA',         before:ebitdaMw_card,  after:ebitdaMpf_card,             delta:ebitdaMpf_card - ebitdaMw_card,   isMargem:true  },
+    { label:'Lucro L&iacute;quido',  before:W.lucroLiquido, after:lucroLiquido_pf,            delta:lucroLiquido_pf - W.lucroLiquido, isMargem:false },
+  ];
+
+  document.getElementById('impact-grid').innerHTML = cards.map(function(c) {
+    var afterFmt  = c.isMargem ? fmtPct(c.after)  : fmtBRL(c.after);
+    var beforeFmt = c.isMargem ? fmtPct(c.before) : fmtBRL(c.before);
+    var deltaFmt;
+    if (c.isMargem) {
+      deltaFmt = (c.delta >= 0 ? '+' : '') + c.delta.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' p.p.';
+    } else {
+      deltaFmt = (c.delta >= 0 ? '+' : '') + fmtBRL(c.delta);
+    }
+    var deltaCls = c.delta < 0 ? 'neg' : '';
+    return '<div class="impact-card">'
+      + '<div class="ic-label">' + c.label + '</div>'
+      + '<div class="ic-after">' + afterFmt + '</div>'
+      + '<div class="ic-before">Real: ' + beforeFmt + '</div>'
+      + '<div class="ic-delta ' + deltaCls + '">' + deltaFmt + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+/* ── INIT ── */
+buildSkuGrid();
+
+SKUS.forEach(function(s) {
+  ['preco-'+s.id, 'mix-'+s.id].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', render);
+    el.addEventListener('focus', function(){ this.select(); });
+    if (id.indexOf('preco') === 0) {
+      el.addEventListener('blur', function(){ formatPrecoOnBlur(this); });
+    }
+  });
+});
+
+render();
+</script>
+</body>
+</html>
